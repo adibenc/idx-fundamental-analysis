@@ -1,0 +1,9 @@
+# exclude folders
+.idea
+.venv
+logs
+
+# exclude files
+.env
+*.json
+*.http

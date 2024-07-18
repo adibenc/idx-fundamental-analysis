@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "idx-fundamental"
+version = "0.1.0"
+description = "IDX Composite Fundamental Analysis"
+authors = ["Satrya Budi Pratama"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+selenium = "^4.22.0"
+beautifulsoup4 = "^4.12.3"
+loguru = "^0.7.2"
+requests = "^2.32.3"
+babel = "^2.15.0"
+yfinance = "^0.2.40"
+google-api-python-client = "^2.137.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
