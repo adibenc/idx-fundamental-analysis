@@ -88,6 +88,11 @@ Contributions are welcome! Feel free to open issues or submit pull requests. Ple
 Currently, the project does not include unit tests. However, testing can be done by running the `main.py` script and
 verifying the output in the Google Sheet.
 
+## Result
+<img width="1795" alt="Screenshot 2024-07-18 at 19 01 45" src="https://github.com/user-attachments/assets/65c79aa5-f6d5-4b06-8d2b-99bef31c9577">
+
+
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
