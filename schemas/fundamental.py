@@ -58,7 +58,6 @@ class ManagementEffectiveness:
     receivables_turnover_quarter: float = 0
     asset_turnover_ttm: float = 0
     inventory_turnover_ttm: float = 0
-    net_profit_margin_ttm: float = 0
 
 
 @dataclass
