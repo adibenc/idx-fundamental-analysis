@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+from utils.helpers import get_sheet_range
+
 load_dotenv()
 
 
@@ -107,7 +109,7 @@ class GoogleDriveService:
 
         body = {"values": values}
 
-        range_name = f"{sheet_title}!A1:{chr(65 + len(values[0]) - 1)}{len(values)}"
+        range_name = f"{sheet_title}!{get_sheet_range(len(values[0]), len(values))}"
 
         self.sheet_service.spreadsheets().values().update(
             spreadsheetId=sheet_id, range=range_name, valueInputOption="RAW", body=body
