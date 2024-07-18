@@ -40,7 +40,7 @@ import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
 from schemas.stock import Stock
@@ -99,7 +99,7 @@ class IDX:
         names = table.find_elements(By.XPATH, "./tbody/tr/td[2]/span")
         ipo_dates = table.find_elements(By.XPATH, "./tbody/tr/td[3]/span")
         market_caps = table.find_elements(By.XPATH, "./tbody/tr/td[4]/span")
-        boards = table.find_elements(By.XPATH, "./tbody/tr/td[5]/span")
+        notes = table.find_elements(By.XPATH, "./tbody/tr/td[5]/span")
 
         # Append data, use array of stock schema
         stocks = []
@@ -109,9 +109,12 @@ class IDX:
                 name=names[index].text,
                 ipo_date=ipo_dates[index].text,
                 market_cap=float(re.sub(r"\D", "", market_caps[index].text)),
-                board=boards[index].text,
+                note=notes[index].text,
             )
             stocks.append(stock)
+
+        # Close browser
+        self.driver.quit()
 
         logger.info(f"Stocks has been retrieved from {url}")
         return stocks
