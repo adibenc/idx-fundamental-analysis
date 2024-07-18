@@ -54,7 +54,8 @@ stores the resultant data in Google Sheets for easy access and analysis.
     }'
   
     GOOGLE_DRIVE_EMAILS='["email1@gmail.com", "email2@gmail.com"]'
-    STOCKBIT_JWT_TOKEN='your_stockbit_jwt_token'
+    STOCKBIT_USERNAME='hello@example.com'
+    STOCKBIT_PASSWORD='pwd'
     ```
 
 ## Usage
@@ -71,7 +72,7 @@ stores the resultant data in Google Sheets for easy access and analysis.
 ## Configuration
 
 The primary configuration options include environment variables set in the `.env` file. Ensure you have authenticated
-and authorized access to Google Drive and possessed a valid JWT token for StockBit API access.
+and authorized access to Google Drive and possessed a valid username and password for StockBit API access.
 
 ## Contribution Guidelines
 
