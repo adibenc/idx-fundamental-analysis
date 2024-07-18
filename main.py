@@ -11,16 +11,18 @@ logger.info("IDX Composite Fundamental Analysis")
 
 load_dotenv()
 
+# Retrieve stocks from IDX
 idx = IDX()
 stocks = idx.stocks()
 logger.info("Stocks: {}".format(stocks))
 logger.info("Total Stocks: {}".format(len(stocks)))
 
-# TODO: Insert into spreadsheet
+# Process stocks key statistics from Stockbit
+stock_bit = StockBit()
+stock_fundamentals = stock_bit.fundamentals(stocks=stocks)
+
+# Insert processed data into Google Spreadsheet
 sheet_title = f"IDX Fundamental Analysis {date.today().strftime("%d-%m-%Y")}"
 spreadsheet = Spreadsheet(title=sheet_title)
-spreadsheet.insert_stock(stocks)
-
-# TODO: Retrieve Stock key statistics from Stockbit
-stock_bit = StockBit()
-stock_bit.key_stats(stocks)
+spreadsheet.insert_stock(stocks=stocks)
+spreadsheet.insert_fundamental(fundamentals=stock_fundamentals)
