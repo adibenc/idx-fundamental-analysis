@@ -72,7 +72,12 @@ def parse_key_statistic_results_item_value(
         return 0.0
 
     # clean string
-    value = value.replace(",", "").replace("(", "").replace(")", "").replace("%", "")
+    value = value.replace(",", "").replace("(", "").replace(")", "")
+
+    # percentage
+    if "%" in value:
+        value = value.replace("%", "")
+        return float(value) / 100
 
     # currency type
     if "B" in value or "M" in value:

@@ -77,10 +77,14 @@ class GoogleDriveService:
         email : str
             The email address to grant write permission to.
         """
-        permission = {"type": "user", "role": "writer", "emailAddress": email}
+        permission = {
+            "type": "user",
+            "role": "writer",
+            "emailAddress": email,
+        }
 
         self.drive_service.permissions().create(
-            fileId=file_id, body=permission
+            fileId=file_id, body=permission, sendNotificationEmail=False
         ).execute()
 
     def insert_data(self, sheet_id: str, sheet_title: str, values: []):
@@ -115,6 +119,8 @@ class GoogleDriveService:
             spreadsheetId=sheet_id, range=range_name, valueInputOption="RAW", body=body
         ).execute()
 
+        self.clean_first_sheet(sheet_titles, sheet_id)
+
     def add_sheet(self, sheet_id, sheet_title):
         """
         Adds a new sheet to an existing Google Sheets spreadsheet.
@@ -131,3 +137,13 @@ class GoogleDriveService:
         self.sheet_service.spreadsheets().batchUpdate(
             spreadsheetId=sheet_id, body=body
         ).execute()
+
+    def clean_first_sheet(self, sheet_titles, sheet_id):
+        for sheet_title in sheet_titles:
+            if sheet_title == "Sheet1":
+                requests = [{"deleteSheet": {"sheetId": 0}}]
+                body = {"requests": requests}
+
+                self.sheet_service.spreadsheets().batchUpdate(
+                    spreadsheetId=sheet_id, body=body
+                ).execute()

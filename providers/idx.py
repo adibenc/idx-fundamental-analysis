@@ -76,7 +76,7 @@ class IDX:
             expect.presence_of_element_located((By.NAME, "perPageSelect"))
         )
 
-        # Find the dropdown
+        # # Find the dropdown
         rows_per_page_dropdown = Select(
             self.driver.find_element(By.NAME, "perPageSelect")
         )

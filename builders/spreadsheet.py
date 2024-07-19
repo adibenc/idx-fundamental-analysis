@@ -54,7 +54,27 @@ class Spreadsheet:
         Args:
             stocks ([Stock]): A list of Stock objects to be inserted.
         """
-        header = ["Ticker", "Name", "IPO Date", "Market Cap", "Note"]
+        header = [
+            "Ticker",
+            "Name",
+            "IPO Date",
+            "Market Cap",
+            "Note",
+            "Price",
+            "Volume",
+            "Change",
+            "Percentage Change",
+            "Average",
+            "Close Price",
+            "High Price",
+            "Open Price",
+            "Low Price",
+            "ARA Price",
+            "ARB Price",
+            "Frequency",
+            "Frequency Sell",
+            "Frequency Buy",
+        ]
         sheet_values = [header]
         for stock in stocks:
             row = [
@@ -63,6 +83,20 @@ class Spreadsheet:
                 stock.ipo_date,
                 stock.market_cap,
                 stock.note,
+                stock.price,
+                stock.volume,
+                stock.change,
+                stock.percentage_change,
+                stock.average,
+                stock.close,
+                stock.high,
+                stock.low,
+                stock.open,
+                stock.ara,
+                stock.arb,
+                stock.frequency,
+                stock.fsell,
+                stock.fbuy,
             ]
             sheet_values.append(row)
 
@@ -282,4 +316,46 @@ class Spreadsheet:
         )
         logger.info(
             f"Fundamentals has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
+        )
+
+    def insert_analysis(self, fundamentals: [Fundamental]):
+        """
+        Inserts fundamental analysis data into the spreadsheet.
+
+        Args:
+            fundamentals ([Fundamental]): A list of Fundamental objects to be inserted.
+        """
+
+        headers = ["Ticker", "PBV x ROE", "Close Price", "Price to Equity Discount (%)"]
+
+        sheet_values = [headers]
+        for fundamental in fundamentals:
+            normal_price = (
+                fundamental.per_share.current_book_value_per_share
+                * fundamental.management_effectiveness.return_on_equity_ttm
+                * 10
+            )
+
+            if normal_price > 0:
+                price_to_equity_disct = 1 - (
+                    (fundamental.stock.close / normal_price) * 100
+                )
+            else:
+                price_to_equity_disct = 0
+
+            row = [
+                fundamental.stock.ticker,
+                round(normal_price, 2),
+                fundamental.stock.close,
+                round(price_to_equity_disct, 2),
+            ]
+
+            sheet_values.append(row)
+
+        self.google_drive_service.insert_data(
+            self.spreadsheet_id, "analyses", sheet_values
+        )
+
+        logger.info(
+            f"Analysis has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
         )

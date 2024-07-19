@@ -538,3 +538,106 @@ class StockBit:
 
         logger.debug(fundamental)
         return fundamental
+
+    def stock_price(self, stock: Stock) -> Stock:
+        """
+        Retrieves stock prices for a given stock by sending a GET request to the API.
+
+        Args:
+            stock (Stock): An instance of the Stock class containing the ticker symbol.
+
+        Returns:
+           stock
+
+        Raises:
+            requests.exceptions.RequestException: If the request fails due to network issues or invalid URL.
+
+        Side Effects:
+            - Logs an error message if the response status code is not 200.
+            - Re-authenticates if a 401 Unauthorized status code is received and retries the request up to 3 times.
+            - Logs an error message if the request fails due to an exception.
+            - Logs an informational message if the request fails after all retries.
+        """
+
+        url = f"https://exodus.stockbit.com/company-price-feed/v2/orderbook/companies/{stock.ticker}"
+        headers = self.request_headers
+        headers["Authorization"] = f"Bearer {self.token}"
+
+        retry = 0
+
+        while retry <= 3:
+            try:
+                headers = self.request_headers
+                headers["Authorization"] = f"Bearer {self.token}"
+                response = requests.get(url, headers=headers)
+
+                if response.status_code == 200:
+                    data = response.json()["data"]
+                    stock.price = data["lastprice"]
+                    stock.change = data["change"]
+                    stock.fbuy = data["fbuy"]
+                    stock.fsell = data["fsell"]
+                    stock.volume = data["volume"]
+                    stock.percentage_change = data["percentage_change"]
+                    stock.average = data["average"]
+                    stock.close = data["close"]
+                    stock.high = data["high"]
+                    stock.low = data["low"]
+                    stock.open = data["open"]
+                    stock.ara = float(data["ara"]["value"].replace(",", ""))
+                    stock.arb = float(data["arb"]["value"].replace(",", ""))
+                    stock.frequency = data["frequency"]
+                    return stock
+
+                else:
+                    logger.error(
+                        f"Error: Received status code {response.status_code}, "
+                        f"text: {response.text}, "
+                        f"ticker: {stock.ticker}, "
+                        f"retry: {retry}"
+                    )
+
+                    if response.status_code == 401:
+                        self.authenticate(
+                            username=os.getenv("STOCKBIT_USERNAME"),
+                            password=os.getenv("STOCKBIT_PASSWORD"),
+                        )
+                        retry += 1
+                    else:
+                        break
+
+            except requests.exceptions.RequestException as e:
+                logger.error(
+                    f"Request failed: {e} "
+                    f"ticker: {stock.ticker}, "
+                    f"retry: {retry}"
+                )
+                break
+
+            time.sleep(0.2)
+
+        logger.info(
+            "Failed to retrieve prices data "
+            f"ticker: {stock.ticker}, "
+            f"retry: {retry}"
+        )
+
+        return stock
+
+    def with_stock_price(self, stocks: [Stock]) -> [Stock]:
+        """
+        Get stock prices for a list of stocks.
+
+        Args:
+            stocks (list of Stock): List of Stock objects to fetch statistics for.
+
+        Returns:
+            [Fundamental]: list of Fundamental object containing parsed fundamental data.
+        """
+        stock_prices = []
+        for stock in stocks:
+            stock_prices.append(self.stock_price(stock))
+
+            time.sleep(0.2)
+
+        return stock_prices

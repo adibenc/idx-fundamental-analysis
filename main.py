@@ -20,9 +20,11 @@ logger.info("Total Stocks: {}".format(len(stocks)))
 # Process stocks key statistics from Stockbit
 stock_bit = StockBit()
 stock_fundamentals = stock_bit.fundamentals(stocks=stocks)
+stock_with_price = stock_bit.with_stock_price(stocks=stocks)
 
 # Insert processed data into Google Spreadsheet
 sheet_title = f"IDX Fundamental Analysis {date.today().strftime("%d-%m-%Y")}"
 spreadsheet = Spreadsheet(title=sheet_title)
-spreadsheet.insert_stock(stocks=stocks)
+spreadsheet.insert_analysis(fundamentals=stock_fundamentals)
+spreadsheet.insert_stock(stocks=stock_with_price)
 spreadsheet.insert_fundamental(fundamentals=stock_fundamentals)
