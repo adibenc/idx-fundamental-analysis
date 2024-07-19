@@ -36,9 +36,7 @@ class StockBit:
     A class to interact with the StockBit API and fetch key statistics for stocks.
 
     Attributes:
-        url (str): The base URL for the StockBit API.
         request_headers (dict): Headers to be used in the API requests.
-        response_data (dict): Data received from the API response.
 
     Methods:
         key_stats(stocks: [Stock]):
@@ -77,7 +75,8 @@ class StockBit:
             requests.exceptions.RequestException: If the request fails due to network issues or invalid URL.
 
         Side Effects:
-            - Sets the `self.token` attribute with the access token received from the API response if authentication is successful.
+            - Sets the `self.token` attribute with the access token received from the API response
+              if authentication is successful.
             - Writes the access token to a temporary file specified by `self.token_temp_file_path`.
             - Logs an error message if the response status code is not 200 or if the request fails.
         """
@@ -106,7 +105,8 @@ class StockBit:
         Reads the authentication token from a temporary file and sets it to `self.token`.
 
         Raises:
-            FileNotFoundError: If the token file does not exist, triggers the authentication process to generate the token.
+            FileNotFoundError: If the token file does not exist,
+            triggers the authentication process to generate the token.
             IOError: If an I/O error occurs while reading the file, logs an error message.
 
         Side Effects:
@@ -117,7 +117,7 @@ class StockBit:
         try:
             with open(self.token_temp_file_path, "r") as file:
                 self.token = file.read()
-        except FileNotFoundError as e:
+        except FileNotFoundError as _e:
             logger.info(
                 f"Will generate stockbit-token file once and authenticate for the first time"
                 f"{self.token_temp_file_path}"
@@ -150,12 +150,14 @@ class StockBit:
             - Logs an informational message if the request fails after all retries.
         """
         url = f"https://exodus.stockbit.com/keystats/ratio/v1/{stock.ticker}?year_limit=10"
+        headers = self.request_headers
+        headers["Authorization"] = f"Bearer {self.token}"
+
         retry = 0
 
         while retry <= 3:
             try:
-                headers = self.request_headers
-                headers["Authorization"] = f"Bearer {self.token}"
+
                 response = requests.get(url, headers=headers)
                 if response.status_code == 200:
                     return response.json()
@@ -186,12 +188,12 @@ class StockBit:
 
             time.sleep(0.2)
 
-        logger.info(
+        logger.error(
             "Failed to retrieve key statistics "
             f"ticker: {stock.ticker}, "
             f"retry: {retry}"
         )
-        return None
+        return {}
 
     def fundamentals(self, stocks: [Stock]) -> [Fundamental]:
         """
@@ -567,12 +569,11 @@ class StockBit:
 
         while retry <= 3:
             try:
-                headers = self.request_headers
-                headers["Authorization"] = f"Bearer {self.token}"
                 response = requests.get(url, headers=headers)
 
                 if response.status_code == 200:
                     data = response.json()["data"]
+
                     stock.price = data["lastprice"]
                     stock.change = data["change"]
                     stock.fbuy = data["fbuy"]
@@ -587,6 +588,8 @@ class StockBit:
                     stock.ara = float(data["ara"]["value"].replace(",", ""))
                     stock.arb = float(data["arb"]["value"].replace(",", ""))
                     stock.frequency = data["frequency"]
+
+                    logger.debug(stock)
                     return stock
 
                 else:
@@ -616,7 +619,7 @@ class StockBit:
 
             time.sleep(0.2)
 
-        logger.info(
+        logger.error(
             "Failed to retrieve prices data "
             f"ticker: {stock.ticker}, "
             f"retry: {retry}"

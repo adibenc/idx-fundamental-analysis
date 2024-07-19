@@ -12,7 +12,7 @@ class CachedLimiterSession(CacheMixin, LimiterMixin, Session):
 class YFinance:
     def __init__(self):
         self.yf = yf
-        self.session = session = CachedLimiterSession(
+        self.session = CachedLimiterSession(
             limiter=Limiter(
                 RequestRate(2, Duration.SECOND * 5)
             ),  # max 2 requests per 5 seconds
