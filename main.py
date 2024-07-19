@@ -12,7 +12,7 @@ logger.info("IDX Composite Fundamental Analysis")
 load_dotenv()
 
 # Retrieve stocks from IDX
-idx = IDX()
+idx = IDX(is_full_retrieve=True)
 stocks = idx.stocks()
 logger.info("Stocks: {}".format(stocks))
 logger.info("Total Stocks: {}".format(len(stocks)))

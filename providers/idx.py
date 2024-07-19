@@ -52,13 +52,14 @@ class IDX:
     IDX Provider Class
     """
 
-    def __init__(self):
+    def __init__(self, is_full_retrieve=True):
         """
         Initializes the IDX provider with a Chrome WebDriver instance and sets the base URL for the IDX website.
         """
         logger.info("IDX provider initialised")
         self.base_url = "https://idx.co.id"
         self.driver = webdriver.Chrome()
+        self.is_full_retrieve = is_full_retrieve
 
     def stocks(self) -> [Stock]:
         """
@@ -71,23 +72,25 @@ class IDX:
 
         self.driver.get(url)
 
-        # Wait for the table to be present
-        WebDriverWait(self.driver, 3).until(
-            expect.presence_of_element_located((By.NAME, "perPageSelect"))
-        )
+        # if true it will retrieve all stocks, otherwise 10 stocks only
+        if self.is_full_retrieve:
+            # Wait for the table to be present
+            WebDriverWait(self.driver, 3).until(
+                expect.presence_of_element_located((By.NAME, "perPageSelect"))
+            )
 
-        # # Find the dropdown
-        rows_per_page_dropdown = Select(
-            self.driver.find_element(By.NAME, "perPageSelect")
-        )
+            # # Find the dropdown
+            rows_per_page_dropdown = Select(
+                self.driver.find_element(By.NAME, "perPageSelect")
+            )
 
-        # Select the option to retrieve all stocks
-        rows_per_page_dropdown.select_by_value("-1")
+            # Select the option to retrieve all stocks
+            rows_per_page_dropdown.select_by_value("-1")
 
-        # Wait for the table to update, adjust the time if necessary
-        WebDriverWait(self.driver, 3).until(
-            expect.presence_of_element_located((By.XPATH, '//*[@id="vgt-table"]'))
-        )
+            # Wait for the table to update, adjust the time if necessary
+            WebDriverWait(self.driver, 3).until(
+                expect.presence_of_element_located((By.XPATH, '//*[@id="vgt-table"]'))
+            )
 
         # Find the table
         table = self.driver.find_element(By.XPATH, '//*[@id="vgt-table"]')
