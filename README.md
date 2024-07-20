@@ -2,7 +2,7 @@
 
 ## Description
 
-IDX Fundamental Analysis project aims to retrieve and analyze fundamental data of companies listed on the Indonesian
+IDX Fundamental Analysis project aims to retrieve and analyse fundamental stock data of companies listed on the Indonesian
 Stock Exchange (IDX). It fetches stock data and key statistics using Selenium, requests, and various provider APIs, and
 stores the resultant data in Google Sheets or local Excel file for easy access and analysis.
 
