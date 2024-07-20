@@ -64,11 +64,11 @@ class Spreadsheet:
         """
         self.google_drive_service.insert_data(
             self.spreadsheet_id,
-            "fundamentals",
+            "key-statistics",
             self.fundamental_analyser.key_statistics_sheet(),
         )
         logger.info(
-            f"Fundamentals has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
+            f"Key statistics has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
         )
 
     def insert_analysis(self):
