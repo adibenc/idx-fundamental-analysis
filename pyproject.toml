@@ -18,6 +18,7 @@ google-api-python-client = "^2.137.0"
 python-dotenv = "^1.0.1"
 yfinance = {extras = ["nospam", "repair"], version = "^0.2.40"}
 pandas-datareader = "^0.10.0"
+openpyxl = "^3.1.5"
 
 
 [build-system]

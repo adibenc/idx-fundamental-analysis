@@ -4,13 +4,15 @@
 
 IDX Fundamental Analysis project aims to retrieve and analyze fundamental data of companies listed on the Indonesian
 Stock Exchange (IDX). It fetches stock data and key statistics using Selenium, requests, and various provider APIs, and
-stores the resultant data in Google Sheets for easy access and analysis.
+stores the resultant data in Google Sheets or local Excel file for easy access and analysis.
 
 ## Features
 
 - **Fetch Stock Data from IDX**: Use Selenium web driver to scrape stock data from IDX.
 - **Retrieve Fundamental Data**: Obtain key statistics and fundamental data using StockBit and YFinance API.
-- **Google Sheets Integration**: Create and update Google Sheets with stock data using Google Drive API.
+- **Google Sheets Integration**: Create and update Google Sheets with stock data using Google Drive API. Required
+  Google Service Account environment variable.
+- **Save as Excel**: Stored the fundamental analysis data in your local file.
 - **Logging**: Robust logging using Loguru for debugging and tracking purposes.
 
 ## Installation
@@ -63,11 +65,15 @@ stores the resultant data in Google Sheets for easy access and analysis.
 1. Run the main script:
 
     ```bash
-    python main.py --full-retrieve
+    python main.py -f -o excel
     ```
-    - The `--full-retrieve` argument is optional. If included, the script will retrieve full stock data from IDX.
+    - The `-f` or `--full-retrieve` argument is optional. If included, the script will retrieve full stock data from
+      IDX.
       If not set, it only retrieve first page which is only 10 stocks.
 
+    - The `-o` or `--output-format` argument with two choices: `spreadsheet` and `excel`. Output will be saved into
+      Google
+      Sheet or Excel local file.
     - This will start the process of fetching stock data from IDX, retrieving key statistics from StockBit, and
       inserting them into a Google Sheet.
 
