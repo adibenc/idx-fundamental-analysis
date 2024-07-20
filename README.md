@@ -63,11 +63,13 @@ stores the resultant data in Google Sheets for easy access and analysis.
 1. Run the main script:
 
     ```bash
-    python main.py
+    python main.py --full-retrieve
     ```
+    - The `--full-retrieve` argument is optional. If included, the script will retrieve full stock data from IDX.
+      If not set, it only retrieve first page which is only 10 stocks.
 
-   This will start the process of fetching stock data from IDX, retrieving key statistics from StockBit, and inserting
-   them into a Google Sheet.
+    - This will start the process of fetching stock data from IDX, retrieving key statistics from StockBit, and
+      inserting them into a Google Sheet.
 
 ## Configuration
 
@@ -89,18 +91,17 @@ Currently, the project does not include unit tests. However, testing can be done
 verifying the output in the Google Sheet.
 
 ## Result
+
 - [IDX Fundamental Analysis 19-07-2024](https://drive.zeroinside.id/s/sJ655E5gSSRGad8)
 
 <img width="1912" alt="Screenshot 2024-07-20 at 00 13 59" src="https://github.com/user-attachments/assets/751f44b7-cd8f-4e4e-9f5d-3cf2fd8c77d2">
-
-
-
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
+
 - [Stockbit](https://stockbit.com) for IDX composite key statistics and stock prices data.
 - [Selenium](https://www.selenium.dev/) for web scraping capabilities.
 - [Loguru](https://github.com/Delgan/loguru) for logging.

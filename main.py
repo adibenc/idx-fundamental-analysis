@@ -1,3 +1,4 @@
+import argparse
 from datetime import date
 
 from dotenv import load_dotenv
@@ -7,24 +8,36 @@ from providers.idx import IDX
 from providers.stockbit import StockBit
 from utils.logger_config import logger
 
-logger.info("IDX Composite Fundamental Analysis")
 
-load_dotenv()
+def main():
+    parser = argparse.ArgumentParser(description="IDX Composite Fundamental Analysis")
+    parser.add_argument(
+        "--full-retrieve", action="store_true", help="Retrieve full stock data from IDX"
+    )
+    args = parser.parse_args()
 
-# Retrieve stocks from IDX
-idx = IDX(is_full_retrieve=True)
-stocks = idx.stocks()
-logger.info("Stocks: {}".format(stocks))
-logger.info("Total Stocks: {}".format(len(stocks)))
+    logger.info("IDX Composite Fundamental Analysis")
 
-# Process stocks key statistics from Stockbit
-stock_bit = StockBit()
-stock_fundamentals = stock_bit.fundamentals(stocks=stocks)
-stock_with_price = stock_bit.with_stock_price(stocks=stocks)
+    load_dotenv()
 
-# Insert processed data into Google Spreadsheet
-sheet_title = f"IDX Fundamental Analysis {date.today().strftime("%d-%m-%Y")}"
-spreadsheet = Spreadsheet(title=sheet_title)
-spreadsheet.insert_analysis(fundamentals=stock_fundamentals)
-spreadsheet.insert_stock(stocks=stock_with_price)
-spreadsheet.insert_fundamental(fundamentals=stock_fundamentals)
+    # Retrieve stocks from IDX
+    idx = IDX(is_full_retrieve=args.full_retrieve)
+    stocks = idx.stocks()
+    logger.info("Stocks: {}".format(stocks))
+    logger.info("Total Stocks: {}".format(len(stocks)))
+
+    # Process stocks key statistics from Stockbit
+    stock_bit = StockBit()
+    stock_fundamentals = stock_bit.fundamentals(stocks=stocks)
+    stock_with_price = stock_bit.with_stock_price(stocks=stocks)
+
+    # Insert processed data into Google Spreadsheet
+    sheet_title = f"IDX Fundamental Analysis {date.today().strftime('%d-%m-%Y')}"
+    spreadsheet = Spreadsheet(title=sheet_title)
+    spreadsheet.insert_analysis(fundamentals=stock_fundamentals)
+    spreadsheet.insert_stock(stocks=stock_with_price)
+    spreadsheet.insert_fundamental(fundamentals=stock_fundamentals)
+
+
+if __name__ == "__main__":
+    main()
