@@ -46,7 +46,7 @@ class StockBit:
             Parses the API response data and returns a Fundamental object.
     """
 
-    def __init__(self):
+    def __init__(self, stocks: [Stock]):
         """
         Initializes the StockBit provider with necessary headers and URL.
         """
@@ -55,6 +55,7 @@ class StockBit:
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
+        self.stocks = stocks
         self.token = ""
         self.token_temp_file_path = os.path.join(
             tempfile.gettempdir(), "stockbit-token.tmp"
@@ -195,18 +196,15 @@ class StockBit:
         )
         return {}
 
-    def fundamentals(self, stocks: [Stock]) -> [Fundamental]:
+    def fundamentals(self) -> [Fundamental]:
         """
         Get fundamentals for a list of stocks.
-
-        Args:
-            stocks (list of Stock): List of Stock objects to fetch statistics for.
 
         Returns:
             [Fundamental]: list of Fundamental object containing parsed fundamental data.
         """
         fundamentals = []
-        for stock in stocks:
+        for stock in self.stocks:
             self.key_statistic = self.key_statistic_by_stock(stock)
 
             if self.key_statistic:
@@ -541,9 +539,9 @@ class StockBit:
         logger.debug(fundamental)
         return fundamental
 
-    def stock_price(self, stock: Stock) -> Stock:
+    def update_stock_price(self, stock: Stock) -> Stock:
         """
-        Retrieves stock prices for a given stock by sending a GET request to the API.
+        Update stock price for a given stock by sending a GET request to the API.
 
         Args:
             stock (Stock): An instance of the Stock class containing the ticker symbol.
@@ -627,20 +625,12 @@ class StockBit:
 
         return stock
 
-    def with_stock_price(self, stocks: [Stock]) -> [Stock]:
+    def with_stock_price(self):
         """
-        Get stock prices for a list of stocks.
-
-        Args:
-            stocks (list of Stock): List of Stock objects to fetch statistics for.
-
-        Returns:
-            [Fundamental]: list of Fundamental object containing parsed fundamental data.
+        Update all stocks price
         """
-        stock_prices = []
-        for stock in stocks:
-            stock_prices.append(self.stock_price(stock))
-
+        for stock in self.stocks:
+            self.update_stock_price(stock)
             time.sleep(0.2)
 
-        return stock_prices
+        return self

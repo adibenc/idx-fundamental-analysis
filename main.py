@@ -3,6 +3,7 @@ from datetime import date
 
 from dotenv import load_dotenv
 
+from builders.fundamental_analyser import FundamentalAnalyser
 from builders.spreadsheet import Spreadsheet
 from providers.idx import IDX
 from providers.stockbit import StockBit
@@ -27,16 +28,20 @@ def main():
     logger.info("Total Stocks: {}".format(len(stocks)))
 
     # Process stocks key statistics from Stockbit
-    stock_bit = StockBit()
-    stock_fundamentals = stock_bit.fundamentals(stocks=stocks)
-    stock_with_price = stock_bit.with_stock_price(stocks=stocks)
+    stock_bit = StockBit(stocks=stocks).with_stock_price()
+    stock_fundamentals = stock_bit.fundamentals()
+
+    # Analyser
+    fundamental_analyser = FundamentalAnalyser(fundamentals=stock_fundamentals)
 
     # Insert processed data into Google Spreadsheet
     sheet_title = f"IDX Fundamental Analysis {date.today().strftime('%d-%m-%Y')}"
-    spreadsheet = Spreadsheet(title=sheet_title)
-    spreadsheet.insert_analysis(fundamentals=stock_fundamentals)
-    spreadsheet.insert_stock(stocks=stock_with_price)
-    spreadsheet.insert_fundamental(fundamentals=stock_fundamentals)
+    spreadsheet = Spreadsheet(
+        title=sheet_title, fundamental_analyser=fundamental_analyser
+    )
+    spreadsheet.insert_analysis()
+    spreadsheet.insert_stock()
+    spreadsheet.insert_key_statistic()
 
 
 if __name__ == "__main__":
