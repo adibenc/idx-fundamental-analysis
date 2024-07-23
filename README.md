@@ -102,6 +102,13 @@ verifying the output in the Google Sheet.
 
 <img width="1912" alt="Screenshot 2024-07-20 at 00 13 59" src="https://github.com/user-attachments/assets/751f44b7-cd8f-4e4e-9f5d-3cf2fd8c77d2">
 
+## TODO
+
+1. Stored data to SQLlite database.
+2. Dashboard support using Streamlit.
+3. Sentiment Analysis using LLMs, will use OpenAI and Ollama.
+4. Time Series Forecasting using ETS, ARIMA, and Prophet.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
