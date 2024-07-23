@@ -87,10 +87,10 @@ class IDX:
             # Select the option to retrieve all stocks
             rows_per_page_dropdown.select_by_value("-1")
 
-            # Wait for the table to update, adjust the time if necessary
-            WebDriverWait(self.driver, 3).until(
-                expect.presence_of_element_located((By.XPATH, '//*[@id="vgt-table"]'))
-            )
+        # Wait for the table to update, adjust the time if necessary
+        WebDriverWait(self.driver, 3).until(
+            expect.presence_of_element_located((By.XPATH, '//*[@id="vgt-table"]'))
+        )
 
         # Find the table
         table = self.driver.find_element(By.XPATH, '//*[@id="vgt-table"]')
