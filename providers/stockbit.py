@@ -1,8 +1,6 @@
-import os
-import tempfile
 import time
 
-import requests
+from black import datetime
 from dotenv import load_dotenv
 
 from schemas.fundamental import (
@@ -21,29 +19,21 @@ from schemas.fundamental import (
     CurrentValuation,
     Stats,
 )
+from schemas.sentiment import Sentiment
 from schemas.stock import Stock
 from utils.helpers import (
     parse_currency_to_float,
     parse_key_statistic_results_item_value,
 )
 from utils.logger_config import logger
+from utils.stockbit_http_request import StockbitHttpRequest
 
 load_dotenv()
 
 
 class StockBit:
     """
-    A class to interact with the StockBit API and fetch key statistics for stocks.
-
-    Attributes:
-        request_headers (dict): Headers to be used in the API requests.
-
-    Methods:
-        key_stats(stocks: [Stock]):
-            Fetches key statistics for a list of stocks and logs the data.
-
-        _fundamental(stock: Stock) -> Fundamental:
-            Parses the API response data and returns a Fundamental object.
+    A class to interact with the StockBit API and fetch key statistics, stock price, and sentiment for stocks.
     """
 
     def __init__(self, stocks: [Stock]):
@@ -56,79 +46,8 @@ class StockBit:
             "Content-Type": "application/json",
         }
         self.stocks = stocks
-        self.token = ""
-        self.token_temp_file_path = os.path.join(
-            tempfile.gettempdir(), "stockbit-token.tmp"
-        )
-        self._read_token()
-
+        self.base_url = "https://exodus.stockbit.com"
         self.key_statistic = None
-
-    def authenticate(self, username, password):
-        """
-        Authenticates a user by sending a POST request to the login API with the provided username and password.
-
-        Args:
-            username (str): The username of the user.
-            password (str): The password of the user.
-
-        Raises:
-            requests.exceptions.RequestException: If the request fails due to network issues or invalid URL.
-
-        Side Effects:
-            - Sets the `self.token` attribute with the access token received from the API response
-              if authentication is successful.
-            - Writes the access token to a temporary file specified by `self.token_temp_file_path`.
-            - Logs an error message if the response status code is not 200 or if the request fails.
-        """
-        url = "https://stockbit.com/api/login/email"
-        payload = {"username": username, "password": password}
-
-        try:
-            response = requests.post(url, headers=self.request_headers, json=payload)
-
-            if response.status_code == 200:
-                self.token = response.json()["data"]["access"]["token"]
-
-                with open(self.token_temp_file_path, "w") as file:
-                    file.write(self.token)
-
-            else:
-                logger.error(
-                    f"Error: Received status code {response.status_code} - {response.text}"
-                )
-
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Request failed: {e}")
-
-    def _read_token(self):
-        """
-        Reads the authentication token from a temporary file and sets it to `self.token`.
-
-        Raises:
-            FileNotFoundError: If the token file does not exist,
-            triggers the authentication process to generate the token.
-            IOError: If an I/O error occurs while reading the file, logs an error message.
-
-        Side Effects:
-            - Sets the `self.token` attribute with the token read from the file.
-            - Logs an informational message if the token file is not found and initiates the authentication process.
-            - Logs an error message if an I/O error occurs while reading the file.
-        """
-        try:
-            with open(self.token_temp_file_path, "r") as file:
-                self.token = file.read()
-        except FileNotFoundError as _e:
-            logger.info(
-                f"Will generate stockbit-token file once and authenticate for the first time"
-                f"{self.token_temp_file_path}"
-            )
-            self.authenticate(
-                username=os.getenv("STOCKBIT_USERNAME"),
-                password=os.getenv("STOCKBIT_PASSWORD"),
-            )
-        except IOError as e:
-            logger.error(f"An error occurred while reading from the file: {e}")
 
     def key_statistic_by_stock(self, stock: Stock) -> dict:
         """
@@ -150,69 +69,27 @@ class StockBit:
             - Logs an error message if the request fails due to an exception.
             - Logs an informational message if the request fails after all retries.
         """
-        url = f"https://exodus.stockbit.com/keystats/ratio/v1/{stock.ticker}?year_limit=10"
-        headers = self.request_headers
-        headers["Authorization"] = f"Bearer {self.token}"
+        url = f"{self.base_url}/keystats/ratio/v1/{stock.ticker}?year_limit=10"
 
-        retry = 0
+        return StockbitHttpRequest(url, self.request_headers).get()
 
-        while retry <= 3:
-            try:
-
-                response = requests.get(url, headers=headers)
-                if response.status_code == 200:
-                    return response.json()
-                else:
-                    logger.error(
-                        f"Error: Received status code {response.status_code}, "
-                        f"text: {response.text}, "
-                        f"ticker: {stock.ticker}, "
-                        f"retry: {retry}"
-                    )
-
-                    if response.status_code == 401:
-                        self.authenticate(
-                            username=os.getenv("STOCKBIT_USERNAME"),
-                            password=os.getenv("STOCKBIT_PASSWORD"),
-                        )
-                        retry += 1
-                    else:
-                        break
-
-            except requests.exceptions.RequestException as e:
-                logger.error(
-                    f"Request failed: {e} "
-                    f"ticker: {stock.ticker}, "
-                    f"retry: {retry}"
-                )
-                break
-
-            time.sleep(0.2)
-
-        logger.error(
-            "Failed to retrieve key statistics "
-            f"ticker: {stock.ticker}, "
-            f"retry: {retry}"
-        )
-        return {}
-
-    def fundamentals(self) -> [Fundamental]:
+    def with_fundamental(self):
         """
         Get fundamentals for a list of stocks.
 
         Returns:
-            [Fundamental]: list of Fundamental object containing parsed fundamental data.
+            Self
         """
-        fundamentals = []
         for stock in self.stocks:
             self.key_statistic = self.key_statistic_by_stock(stock)
 
             if self.key_statistic:
-                fundamentals.append(self._fundamental(stock))
+                stock.fundamental = self._fundamental(stock)
 
-            time.sleep(0.2)
+            time.sleep(0.1)
+            logger.debug(stock)
 
-        return fundamentals
+        return self
 
     def _fundamental(self, stock: Stock) -> Fundamental | None:
         """
@@ -534,103 +411,147 @@ class StockBit:
             ),
         )
         fundamental.price_performance = price_performance
-        logger.debug(price_performance)
 
-        logger.debug(fundamental)
         return fundamental
 
-    def update_stock_price(self, stock: Stock) -> Stock:
+    def stock_price_by_stock(self, stock: Stock) -> Stock:
         """
-        Update stock price for a given stock by sending a GET request to the API.
+        Fetches the stock price data for a given stock.
 
-        Args:
-            stock (Stock): An instance of the Stock class containing the ticker symbol.
+        This method constructs a URL using the base URL and the stock's ticker symbol,
+        then makes an HTTP GET request to retrieve the stock price data associated with that stock.
+
+        Parameters:
+        - stock (Stock): An instance of the Stock class containing the ticker symbol
+          for which the stock price data is to be fetched.
 
         Returns:
-           stock
-
-        Raises:
-            requests.exceptions.RequestException: If the request fails due to network issues or invalid URL.
-
-        Side Effects:
-            - Logs an error message if the response status code is not 200.
-            - Re-authenticates if a 401 Unauthorized status code is received and retries the request up to 3 times.
-            - Logs an error message if the request fails due to an exception.
-            - Logs an informational message if the request fails after all retries.
+        - Stock: The stock price data extracted from the response.
         """
-
-        url = f"https://exodus.stockbit.com/company-price-feed/v2/orderbook/companies/{stock.ticker}"
-        headers = self.request_headers
-        headers["Authorization"] = f"Bearer {self.token}"
-
-        retry = 0
-
-        while retry <= 3:
-            try:
-                response = requests.get(url, headers=headers)
-
-                if response.status_code == 200:
-                    data = response.json()["data"]
-
-                    stock.price = data["lastprice"]
-                    stock.change = data["change"]
-                    stock.fbuy = data["fbuy"]
-                    stock.fsell = data["fsell"]
-                    stock.volume = data["volume"]
-                    stock.percentage_change = data["percentage_change"]
-                    stock.average = data["average"]
-                    stock.close = data["close"]
-                    stock.high = data["high"]
-                    stock.low = data["low"]
-                    stock.open = data["open"]
-                    stock.ara = float(data["ara"]["value"].replace(",", ""))
-                    stock.arb = float(data["arb"]["value"].replace(",", ""))
-                    stock.frequency = data["frequency"]
-
-                    logger.debug(stock)
-                    return stock
-
-                else:
-                    logger.error(
-                        f"Error: Received status code {response.status_code}, "
-                        f"text: {response.text}, "
-                        f"ticker: {stock.ticker}, "
-                        f"retry: {retry}"
-                    )
-
-                    if response.status_code == 401:
-                        self.authenticate(
-                            username=os.getenv("STOCKBIT_USERNAME"),
-                            password=os.getenv("STOCKBIT_PASSWORD"),
-                        )
-                        retry += 1
-                    else:
-                        break
-
-            except requests.exceptions.RequestException as e:
-                logger.error(
-                    f"Request failed: {e} "
-                    f"ticker: {stock.ticker}, "
-                    f"retry: {retry}"
-                )
-                break
-
-            time.sleep(0.2)
-
-        logger.error(
-            "Failed to retrieve prices data "
-            f"ticker: {stock.ticker}, "
-            f"retry: {retry}"
+        url = (
+            f"{self.base_url}/company-price-feed/v2/orderbook/companies/{stock.ticker}"
         )
 
-        return stock
+        response = StockbitHttpRequest(url, self.request_headers).get()
+        return response["data"]
 
     def with_stock_price(self):
         """
-        Update all stocks price
+        Updates each stock in the stocks list with detailed price data.
+
+        This method iterates over each stock in the `stocks` list, fetching the latest stock price data.
+        It updates various attributes of the stock with the retrieved data, such as last price, change, volume, etc.
+        The method pauses briefly between processing each stock to avoid overwhelming the server with requests.
+
+        Returns:
+        - self: The instance of the class, allowing for method chaining.
         """
         for stock in self.stocks:
-            self.update_stock_price(stock)
-            time.sleep(0.2)
+            data = self.stock_price_by_stock(stock)
+
+            stock.price = data["lastprice"]
+            stock.change = data["change"]
+            stock.fbuy = data["fbuy"]
+            stock.fsell = data["fsell"]
+            stock.volume = data["volume"]
+            stock.percentage_change = data["percentage_change"]
+            stock.average = data["average"]
+            stock.close = data["close"]
+            stock.high = data["high"]
+            stock.low = data["low"]
+            stock.open = data["open"]
+            stock.ara = float(data["ara"]["value"].replace(",", ""))
+            stock.arb = float(data["arb"]["value"].replace(",", ""))
+            stock.frequency = data["frequency"]
+
+            time.sleep(0.1)
+
+            logger.debug(stock)
+
+        return self
+
+    def stream_pinned_by_stock(self, stock: Stock) -> dict:
+        """
+        Fetches the pinned stream data for a given stock.
+
+        This method constructs a URL using the base URL and the stock's ticker symbol,
+        then makes an HTTP GET request to retrieve the pinned stream data associated
+        with that stock.
+
+        Parameters:
+        - stock (Stock): An instance of the Stock class containing the ticker symbol
+          for which the pinned stream data is to be fetched.
+
+        Returns:
+        - dict: A dictionary containing the response data from the HTTP GET request.
+        """
+        url = f"{self.base_url}/stream/v3/symbol/{stock.ticker}/pinned"
+
+        return StockbitHttpRequest(url, self.request_headers).get()
+
+    def stream_by_stock(self, stock: Stock) -> dict:
+        """
+        Fetches the stream data for a given stock.
+
+        This method constructs a URL using the base URL and the stock's ticker symbol,
+        then makes an HTTP POST request to retrieve the stream data associated with that stock.
+        The request includes a payload specifying the category, last stream ID, and limit.
+
+        Parameters:
+        - stock (Stock): An instance of the Stock class containing the ticker symbol
+          for which the stream data is to be fetched.
+
+        Returns:
+        - dict: A dictionary containing the response data from the HTTP POST request.
+        """
+        url = f"{self.base_url}/stream/v3/symbol/{stock.ticker}"
+        payload = {"category": "STREAM_CATEGORY_ALL", "last_stream_id": 0, "limit": 20}
+        return StockbitHttpRequest(url, self.request_headers).post(payload)
+
+    def with_stream_data(self):
+        """
+        Updates each stock in the stocks list with sentiment data from stream and pinned stream sources.
+
+        This method iterates over each stock in the `stocks` list, fetching both pinned and regular stream data.
+        It processes the response to extract sentiment information, which is then added to the stock's sentiment attribute.
+        The method pauses briefly between processing each stock to avoid overwhelming the server with requests.
+
+        Returns:
+        - self: The instance of the class, allowing for method chaining.
+        """
+        for stock in self.stocks:
+            response_stream_pinned = self.stream_pinned_by_stock(stock)
+            response_stream = self.stream_by_stock(stock)
+
+            if response_stream_pinned != {}:
+                pinned_data = response_stream_pinned["data"]
+
+                if pinned_data is not None:
+                    posted_at = datetime.fromisoformat(pinned_data["created_at"])
+                    sentiment = Sentiment(
+                        content=pinned_data["content"], posted_at=posted_at
+                    )
+
+                    stock.sentiment = [sentiment]
+
+            if response_stream != {}:
+                stream_data = response_stream["data"]["stream"]
+
+                if stream_data is not None:
+                    for stream in stream_data:
+                        posted_at = datetime.fromisoformat(stream["created_at"])
+
+                        sentiment = Sentiment(
+                            content=stream["content"], posted_at=posted_at
+                        )
+
+                        if stock.sentiment is None:
+                            stock.sentiment = [sentiment]
+                        else:
+                            stock.sentiment.append(sentiment)
+
+            time.sleep(0.1)
+
+            logger.debug(stock)
 
         return self
