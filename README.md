@@ -98,11 +98,12 @@ verifying the output in the Google Sheet.
 
 ## Result
 
-### Screenshot
-- [IDX Fundamental Analysis 05-10-2024](https://drive.zeroinside.id/s/sJ655E5gSSRGad8)
+### File [Limited only 10 stocks]
+- [IDX Fundamental Analysis 05-10-2024](https://drive.zeroinside.id/s/2eakERgsZCMfRPx)
 
 ### Screencast
-![demo-idx-fundamental](https://github.com/user-attachments/assets/15a56238-e924-4100-8bb3-2c65a5c5e5ea)
+![demo-idx-fundamental](https://github.com/user-attachments/assets/c365cd75-fed7-41c9-8719-17bf36dc97cb)
+
 
 ## TODO
 
