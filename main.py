@@ -3,15 +3,15 @@ from datetime import date
 
 from dotenv import load_dotenv
 
-from builders.excel import Excel
-from builders.fundamental_analyser import FundamentalAnalyser
-from builders.spreadsheet import Spreadsheet
+from builders.analysers import Analyser
 from providers.idx import IDX
 from providers.stockbit import StockBit
 from utils.logger_config import logger
 
+load_dotenv()
 
-def main():
+
+def parse_arguments():
     parser = argparse.ArgumentParser(description="IDX Composite Fundamental Analysis")
     parser.add_argument(
         "-f",
@@ -26,11 +26,13 @@ def main():
         default="spreadsheet",
         help="Specify the output format: 'spreadsheet' for Google Spreadsheet, 'excel' for Excel file",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main():
     logger.info("IDX Composite Fundamental Analysis")
 
-    load_dotenv()
+    args = parse_arguments()
 
     # Retrieve stocks from IDX
     idx = IDX(is_full_retrieve=args.full_retrieve)
@@ -38,32 +40,12 @@ def main():
     logger.info("Stocks: {}".format(stocks))
     logger.info("Total Stocks: {}".format(len(stocks)))
 
-    # Process stocks key statistics from Stockbit
-    stock_bit = StockBit(stocks=stocks).with_stock_price()
-    stock_fundamentals = stock_bit.fundamentals()
+    # Process stocks key statistics, price, fundamental, and stream data (news) from Stockbit
+    StockBit(stocks=stocks).with_stock_price().with_fundamental().with_stream_data()
 
-    # Analyser
-    fundamental_analyser = FundamentalAnalyser(fundamentals=stock_fundamentals)
-
-    sheet_title = f"IDX Fundamental Analysis {date.today().strftime('%d-%m-%Y')}"
-    if args.output_format == "spreadsheet":
-        # Insert processed data into Google Spreadsheet
-        spreadsheet = Spreadsheet(
-            title=sheet_title, fundamental_analyser=fundamental_analyser
-        )
-        spreadsheet.insert_analysis()
-        spreadsheet.insert_stock()
-        spreadsheet.insert_key_statistic()
-    elif args.output_format == "excel":
-        # Insert processed data into local Excel file
-        excel_file = f"{sheet_title}.xlsx"
-        excel = Excel(filename=excel_file, fundamental_analyser=fundamental_analyser)
-        excel.insert_analysis()
-        excel.insert_stock()
-        excel.insert_key_statistic()
-        excel.save()
-    else:
-        logger.error("Invalid output format specified.")
+    # Analyser to build the output
+    title = f"IDX Fundamental Analysis {date.today().strftime('%d-%m-%Y')}"
+    Analyser(stocks=stocks).build(output=args.output_format, title=title)
 
 
 if __name__ == "__main__":
