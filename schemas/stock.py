@@ -1,4 +1,8 @@
 from dataclasses import dataclass
+from typing import List
+
+from schemas.fundamental import Fundamental
+from schemas.sentiment import Sentiment
 
 
 @dataclass
@@ -22,3 +26,6 @@ class Stock:
     frequency: float = 0.0
     fsell: float = 0.0
     fbuy: float = 0.0
+    home_page: str = ""
+    sentiment: List[Sentiment] = None
+    fundamental: Fundamental = None
