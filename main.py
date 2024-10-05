@@ -44,7 +44,7 @@ def main():
     StockBit(stocks=stocks).with_stock_price().with_fundamental().with_stream_data()
 
     # Analyser to build the output
-    title = f"IDX Fundamental Analysis {date.today().strftime('%d-%m-%Y')}"
+    title = f"IDX Fundamental Analysis {date.today().strftime('%Y-%m-%d')}"
     Analyser(stocks=stocks).build(output=args.output_format, title=title)
 
 
