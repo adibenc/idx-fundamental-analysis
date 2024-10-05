@@ -98,9 +98,11 @@ verifying the output in the Google Sheet.
 
 ## Result
 
-- [IDX Fundamental Analysis 19-07-2024](https://drive.zeroinside.id/s/sJ655E5gSSRGad8)
+### Screenshot
+- [IDX Fundamental Analysis 05-10-2024](https://drive.zeroinside.id/s/sJ655E5gSSRGad8)
 
-<img width="1912" alt="Screenshot 2024-07-20 at 00 13 59" src="https://github.com/user-attachments/assets/751f44b7-cd8f-4e4e-9f5d-3cf2fd8c77d2">
+### Screencast
+![demo-idx-fundamental](https://github.com/user-attachments/assets/15a56238-e924-4100-8bb3-2c65a5c5e5ea)
 
 ## TODO
 
