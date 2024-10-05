@@ -5,13 +5,14 @@ from dotenv import load_dotenv
 
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
+from builders.builder_interface import BuilderInterface
 from services.google_drive_service import GoogleDriveService
 from utils.logger_config import logger
 
 load_dotenv()
 
 
-class Spreadsheet:
+class Spreadsheet(BuilderInterface):
     """
     A class to manage the creation and data insertion of a Google Spreadsheet.
 

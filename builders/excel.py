@@ -2,10 +2,11 @@ import openpyxl
 
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
+from builders.builder_interface import BuilderInterface
 from utils.logger_config import logger
 
 
-class Excel:
+class Excel(BuilderInterface):
     def __init__(
         self,
         title: str,
