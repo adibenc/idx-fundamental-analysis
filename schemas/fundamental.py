@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from schemas.stock import Stock
-
 
 @dataclass
 class CurrentValuation:
@@ -150,7 +148,6 @@ class Stats:
 
 @dataclass
 class Fundamental:
-    stock: Stock = Stock
     stats: Stats = Stats
     current_valuation: CurrentValuation = CurrentValuation
     per_share: PerShare = PerShare
