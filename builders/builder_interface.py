@@ -1,19 +1,19 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 
-class BuilderInterface:
+class BuilderInterface(ABC):
     @abstractmethod
     def insert_stock(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def insert_key_statistic(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def insert_analysis(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def insert_sentiment(self):
-        pass
+        raise NotImplementedError
