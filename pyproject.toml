@@ -12,13 +12,14 @@ python = "^3.12"
 selenium = "^4.22.0"
 beautifulsoup4 = "^4.12.3"
 loguru = "^0.7.2"
-requests = "^2.32.3"
+requests = "^2.32.0"
 babel = "^2.15.0"
 google-api-python-client = "^2.137.0"
 python-dotenv = "^1.0.1"
-yfinance = {extras = ["nospam", "repair"], version = "^0.2.40"}
+yfinance = { extras = ["nospam", "repair"], version = "^0.2.40" }
 pandas-datareader = "^0.10.0"
 openpyxl = "^3.1.5"
+crawl4ai = "^0.3.4"
 
 
 [build-system]
