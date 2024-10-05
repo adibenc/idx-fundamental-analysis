@@ -1,13 +1,20 @@
 import openpyxl
 
-from builders.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.sentiment_analyser import SentimentAnalyser
 from utils.logger_config import logger
 
 
 class Excel:
-    def __init__(self, filename: str, fundamental_analyser: FundamentalAnalyser):
-        self.filename = filename
+    def __init__(
+        self,
+        title: str,
+        fundamental_analyser: FundamentalAnalyser,
+        sentiment_analyser: SentimentAnalyser,
+    ):
+        self.filename = f"{title}.xlsx"
         self.fundamental_analyser = fundamental_analyser
+        self.sentiment_analyser = sentiment_analyser
 
         try:
             # Try to load an existing workbook
@@ -65,3 +72,9 @@ class Excel:
         """
 
         self._write_to_sheet("analysis", self.fundamental_analyser.analysis_sheet())
+
+    def insert_sentiment(self):
+        """
+        Inserts sentiment analysis data into the spreadsheet.
+        """
+        self._write_to_sheet("sentiment", self.sentiment_analyser.sentiment_sheet())

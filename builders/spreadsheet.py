@@ -3,7 +3,8 @@ import os
 
 from dotenv import load_dotenv
 
-from builders.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.sentiment_analyser import SentimentAnalyser
 from services.google_drive_service import GoogleDriveService
 from utils.logger_config import logger
 
@@ -20,7 +21,12 @@ class Spreadsheet:
         spreadsheet_id (str): The ID of the created spreadsheet.
     """
 
-    def __init__(self, title: str, fundamental_analyser: FundamentalAnalyser):
+    def __init__(
+        self,
+        title: str,
+        fundamental_analyser: FundamentalAnalyser,
+        sentiment_analyser: SentimentAnalyser,
+    ):
         """
         Initializes the Spreadsheet class with a title and creates a new spreadsheet.
 
@@ -31,6 +37,7 @@ class Spreadsheet:
         self.fundamental_analyser = fundamental_analyser
         self.google_drive_service = GoogleDriveService()
         self.spreadsheet_id = ""
+        self.sentiment_analyser = sentiment_analyser
         self._create()
 
     def _create(self):
@@ -82,4 +89,19 @@ class Spreadsheet:
 
         logger.info(
             f"Analysis has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
+        )
+
+    def insert_sentiment(self):
+        """
+        Inserts fundamental analysis data into the spreadsheet.
+        """
+
+        self.google_drive_service.insert_data(
+            self.spreadsheet_id,
+            "sentiments",
+            self.sentiment_analyser.sentiment_sheet(),
+        )
+
+        logger.info(
+            f"Sentiment has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
         )

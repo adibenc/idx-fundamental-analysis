@@ -1,11 +1,30 @@
-from schemas.fundamental import Fundamental
+from schemas.stock import Stock
 
 
 class FundamentalAnalyser:
-    def __init__(self, fundamentals: [Fundamental]):
-        self.fundamentals = fundamentals
+    """
+    Analyzes fundamental data for a list of stocks and generates various sheets.
+
+    Attributes:
+    - stocks (list of Stock): A list of Stock objects to be analyzed.
+    """
+
+    def __init__(self, stocks: [Stock]):
+        """
+        Initializes the FundamentalAnalyser with a list of stocks.
+
+        Parameters:
+        - stocks (list of Stock): A list of Stock objects containing fundamental data.
+        """
+        self.stocks = stocks
 
     def stocks_sheet(self) -> []:
+        """
+        Generates a sheet of basic stock information.
+
+        Returns:
+        - list of list: A list of rows, each containing basic stock information.
+        """
         header = [
             "Ticker",
             "Name",
@@ -28,33 +47,39 @@ class FundamentalAnalyser:
             "Frequency Buy",
         ]
         sheet_values = [header]
-        for fundamental in self.fundamentals:
+        for stock in self.stocks:
             row = [
-                fundamental.stock.ticker,
-                fundamental.stock.name,
-                fundamental.stock.ipo_date,
-                fundamental.stock.market_cap,
-                fundamental.stock.note,
-                fundamental.stock.price,
-                fundamental.stock.volume,
-                fundamental.stock.change,
-                fundamental.stock.percentage_change,
-                fundamental.stock.average,
-                fundamental.stock.close,
-                fundamental.stock.high,
-                fundamental.stock.low,
-                fundamental.stock.open,
-                fundamental.stock.ara,
-                fundamental.stock.arb,
-                fundamental.stock.frequency,
-                fundamental.stock.fsell,
-                fundamental.stock.fbuy,
+                stock.fundamental.stock.ticker,
+                stock.fundamental.stock.name,
+                stock.fundamental.stock.ipo_date,
+                stock.fundamental.stock.market_cap,
+                stock.fundamental.stock.note,
+                stock.fundamental.stock.price,
+                stock.fundamental.stock.volume,
+                stock.fundamental.stock.change,
+                stock.fundamental.stock.percentage_change,
+                stock.fundamental.stock.average,
+                stock.fundamental.stock.close,
+                stock.fundamental.stock.high,
+                stock.fundamental.stock.low,
+                stock.fundamental.stock.open,
+                stock.fundamental.stock.ara,
+                stock.fundamental.stock.arb,
+                stock.fundamental.stock.frequency,
+                stock.fundamental.stock.fsell,
+                stock.fundamental.stock.fbuy,
             ]
             sheet_values.append(row)
 
         return sheet_values
 
     def key_statistics_sheet(self) -> []:
+        """
+        Generates a sheet of key statistics for each stock.
+
+        Returns:
+        - list of list: A list of rows, each containing key statistics for a stock.
+        """
         header = [
             "Ticker",
             "Current PE Ratio (Annualised)",
@@ -153,108 +178,114 @@ class FundamentalAnalyser:
         ]
         sheet_values = [header]
 
-        for fundamental in self.fundamentals:
+        for stock in self.stocks:
             row = [
-                fundamental.stock.ticker,
-                fundamental.current_valuation.current_pe_ratio_annual,
-                fundamental.current_valuation.current_pe_ratio_ttm,
-                fundamental.current_valuation.forward_pe_ratio,
-                fundamental.current_valuation.ihsg_pe_ratio_ttm_median,
-                fundamental.current_valuation.earnings_yield_ttm,
-                fundamental.current_valuation.current_price_to_sales_ttm,
-                fundamental.current_valuation.current_price_to_book_value,
-                fundamental.current_valuation.current_price_to_cashflow_ttm,
-                fundamental.current_valuation.current_price_to_free_cashflow_ttm,
-                fundamental.current_valuation.ev_to_ebit_ttm,
-                fundamental.current_valuation.ev_to_ebitda_ttm,
-                fundamental.current_valuation.peg_ratio,
-                fundamental.current_valuation.peg_ratio_3yr,
-                fundamental.current_valuation.peg_forward,
-                fundamental.per_share.current_eps_ttm,
-                fundamental.per_share.current_eps_annualised,
-                fundamental.per_share.revenue_per_share_ttm,
-                fundamental.per_share.cash_per_share_quarter,
-                fundamental.per_share.current_book_value_per_share,
-                fundamental.per_share.free_cashflow_per_share_ttm,
-                fundamental.solvency.current_ratio_quarter,
-                fundamental.solvency.quick_ratio_quarter,
-                fundamental.solvency.debt_to_equity_ratio_quarter,
-                fundamental.solvency.lt_debt_equity_quarter,
-                fundamental.solvency.total_liabilities_equity_quarter,
-                fundamental.solvency.total_debt_total_assets_quarter,
-                fundamental.solvency.financial_leverage_quarter,
-                fundamental.solvency.interest_rate_coverage_ttm,
-                fundamental.solvency.free_cash_flow_quarter,
-                fundamental.solvency.altman_z_score_modified,
-                fundamental.management_effectiveness.return_on_assets_ttm,
-                fundamental.management_effectiveness.return_on_equity_ttm,
-                fundamental.management_effectiveness.return_on_capital_employed_ttm,
-                fundamental.management_effectiveness.return_on_invested_capital_ttm,
-                fundamental.management_effectiveness.days_sales_outstanding_quarter,
-                fundamental.management_effectiveness.days_inventory_quarter,
-                fundamental.management_effectiveness.days_payables_outstanding_quarter,
-                fundamental.management_effectiveness.cash_conversion_cycle_quarter,
-                fundamental.management_effectiveness.receivables_turnover_quarter,
-                fundamental.management_effectiveness.asset_turnover_ttm,
-                fundamental.management_effectiveness.inventory_turnover_ttm,
-                fundamental.profitability.gross_profit_margin_quarter,
-                fundamental.profitability.operating_profit_margin_quarter,
-                fundamental.profitability.net_profit_margin_quarter,
-                fundamental.growth.revenue_quarter_yoy_growth,
-                fundamental.growth.gross_profit_quarter_yoy_growth,
-                fundamental.growth.net_income_quarter_yoy_growth,
-                fundamental.dividend.dividend,
-                fundamental.dividend.dividend_ttm,
-                fundamental.dividend.payout_ratio,
-                fundamental.dividend.dividend_yield,
-                fundamental.dividend.latest_dividend_ex_date,
-                fundamental.market_rank.piotroski_f_score,
-                fundamental.market_rank.eps_rating,
-                fundamental.market_rank.relative_strength_rating,
-                fundamental.market_rank.rank_market_cap,
-                fundamental.market_rank.rank_current_pe_ratio_ttm,
-                fundamental.market_rank.rank_earnings_yield,
-                fundamental.market_rank.rank_p_s,
-                fundamental.market_rank.rank_p_b,
-                fundamental.market_rank.rank_near_52_weeks_high,
-                fundamental.income_statement.revenue_ttm,
-                fundamental.income_statement.gross_profit_ttm,
-                fundamental.income_statement.ebitda_ttm,
-                fundamental.income_statement.net_income_ttm,
-                fundamental.balance_sheet.cash_quarter,
-                fundamental.balance_sheet.total_assets_quarter,
-                fundamental.balance_sheet.total_liabilities_quarter,
-                fundamental.balance_sheet.working_capital_quarter,
-                fundamental.balance_sheet.total_equity,
-                fundamental.balance_sheet.long_term_debt_quarter,
-                fundamental.balance_sheet.short_term_debt_quarter,
-                fundamental.balance_sheet.total_debt_quarter,
-                fundamental.balance_sheet.net_debt_quarter,
-                fundamental.cash_flow_statement.cash_from_operations_ttm,
-                fundamental.cash_flow_statement.cash_from_investing_ttm,
-                fundamental.cash_flow_statement.cash_from_financing_ttm,
-                fundamental.cash_flow_statement.capital_expenditure_ttm,
-                fundamental.cash_flow_statement.free_cash_flow_ttm,
-                fundamental.price_performance.one_week_price_returns,
-                fundamental.price_performance.three_month_price_returns,
-                fundamental.price_performance.one_month_price_returns,
-                fundamental.price_performance.six_month_price_returns,
-                fundamental.price_performance.one_year_price_returns,
-                fundamental.price_performance.three_year_price_returns,
-                fundamental.price_performance.five_year_price_returns,
-                fundamental.price_performance.ten_year_price_returns,
-                fundamental.price_performance.year_to_date_price_returns,
-                fundamental.price_performance.fifty_two_week_high,
-                fundamental.price_performance.fifty_two_week_low,
-                fundamental.stats.market_cap,
-                fundamental.stats.enterprise_value,
-                fundamental.stats.current_share_outstanding,
+                stock.fundamental.stock.ticker,
+                stock.fundamental.current_valuation.current_pe_ratio_annual,
+                stock.fundamental.current_valuation.current_pe_ratio_ttm,
+                stock.fundamental.current_valuation.forward_pe_ratio,
+                stock.fundamental.current_valuation.ihsg_pe_ratio_ttm_median,
+                stock.fundamental.current_valuation.earnings_yield_ttm,
+                stock.fundamental.current_valuation.current_price_to_sales_ttm,
+                stock.fundamental.current_valuation.current_price_to_book_value,
+                stock.fundamental.current_valuation.current_price_to_cashflow_ttm,
+                stock.fundamental.current_valuation.current_price_to_free_cashflow_ttm,
+                stock.fundamental.current_valuation.ev_to_ebit_ttm,
+                stock.fundamental.current_valuation.ev_to_ebitda_ttm,
+                stock.fundamental.current_valuation.peg_ratio,
+                stock.fundamental.current_valuation.peg_ratio_3yr,
+                stock.fundamental.current_valuation.peg_forward,
+                stock.fundamental.per_share.current_eps_ttm,
+                stock.fundamental.per_share.current_eps_annualised,
+                stock.fundamental.per_share.revenue_per_share_ttm,
+                stock.fundamental.per_share.cash_per_share_quarter,
+                stock.fundamental.per_share.current_book_value_per_share,
+                stock.fundamental.per_share.free_cashflow_per_share_ttm,
+                stock.fundamental.solvency.current_ratio_quarter,
+                stock.fundamental.solvency.quick_ratio_quarter,
+                stock.fundamental.solvency.debt_to_equity_ratio_quarter,
+                stock.fundamental.solvency.lt_debt_equity_quarter,
+                stock.fundamental.solvency.total_liabilities_equity_quarter,
+                stock.fundamental.solvency.total_debt_total_assets_quarter,
+                stock.fundamental.solvency.financial_leverage_quarter,
+                stock.fundamental.solvency.interest_rate_coverage_ttm,
+                stock.fundamental.solvency.free_cash_flow_quarter,
+                stock.fundamental.solvency.altman_z_score_modified,
+                stock.fundamental.management_effectiveness.return_on_assets_ttm,
+                stock.fundamental.management_effectiveness.return_on_equity_ttm,
+                stock.fundamental.management_effectiveness.return_on_capital_employed_ttm,
+                stock.fundamental.management_effectiveness.return_on_invested_capital_ttm,
+                stock.fundamental.management_effectiveness.days_sales_outstanding_quarter,
+                stock.fundamental.management_effectiveness.days_inventory_quarter,
+                stock.fundamental.management_effectiveness.days_payables_outstanding_quarter,
+                stock.fundamental.management_effectiveness.cash_conversion_cycle_quarter,
+                stock.fundamental.management_effectiveness.receivables_turnover_quarter,
+                stock.fundamental.management_effectiveness.asset_turnover_ttm,
+                stock.fundamental.management_effectiveness.inventory_turnover_ttm,
+                stock.fundamental.profitability.gross_profit_margin_quarter,
+                stock.fundamental.profitability.operating_profit_margin_quarter,
+                stock.fundamental.profitability.net_profit_margin_quarter,
+                stock.fundamental.growth.revenue_quarter_yoy_growth,
+                stock.fundamental.growth.gross_profit_quarter_yoy_growth,
+                stock.fundamental.growth.net_income_quarter_yoy_growth,
+                stock.fundamental.dividend.dividend,
+                stock.fundamental.dividend.dividend_ttm,
+                stock.fundamental.dividend.payout_ratio,
+                stock.fundamental.dividend.dividend_yield,
+                stock.fundamental.dividend.latest_dividend_ex_date,
+                stock.fundamental.market_rank.piotroski_f_score,
+                stock.fundamental.market_rank.eps_rating,
+                stock.fundamental.market_rank.relative_strength_rating,
+                stock.fundamental.market_rank.rank_market_cap,
+                stock.fundamental.market_rank.rank_current_pe_ratio_ttm,
+                stock.fundamental.market_rank.rank_earnings_yield,
+                stock.fundamental.market_rank.rank_p_s,
+                stock.fundamental.market_rank.rank_p_b,
+                stock.fundamental.market_rank.rank_near_52_weeks_high,
+                stock.fundamental.income_statement.revenue_ttm,
+                stock.fundamental.income_statement.gross_profit_ttm,
+                stock.fundamental.income_statement.ebitda_ttm,
+                stock.fundamental.income_statement.net_income_ttm,
+                stock.fundamental.balance_sheet.cash_quarter,
+                stock.fundamental.balance_sheet.total_assets_quarter,
+                stock.fundamental.balance_sheet.total_liabilities_quarter,
+                stock.fundamental.balance_sheet.working_capital_quarter,
+                stock.fundamental.balance_sheet.total_equity,
+                stock.fundamental.balance_sheet.long_term_debt_quarter,
+                stock.fundamental.balance_sheet.short_term_debt_quarter,
+                stock.fundamental.balance_sheet.total_debt_quarter,
+                stock.fundamental.balance_sheet.net_debt_quarter,
+                stock.fundamental.cash_flow_statement.cash_from_operations_ttm,
+                stock.fundamental.cash_flow_statement.cash_from_investing_ttm,
+                stock.fundamental.cash_flow_statement.cash_from_financing_ttm,
+                stock.fundamental.cash_flow_statement.capital_expenditure_ttm,
+                stock.fundamental.cash_flow_statement.free_cash_flow_ttm,
+                stock.fundamental.price_performance.one_week_price_returns,
+                stock.fundamental.price_performance.three_month_price_returns,
+                stock.fundamental.price_performance.one_month_price_returns,
+                stock.fundamental.price_performance.six_month_price_returns,
+                stock.fundamental.price_performance.one_year_price_returns,
+                stock.fundamental.price_performance.three_year_price_returns,
+                stock.fundamental.price_performance.five_year_price_returns,
+                stock.fundamental.price_performance.ten_year_price_returns,
+                stock.fundamental.price_performance.year_to_date_price_returns,
+                stock.fundamental.price_performance.fifty_two_week_high,
+                stock.fundamental.price_performance.fifty_two_week_low,
+                stock.fundamental.stats.market_cap,
+                stock.fundamental.stats.enterprise_value,
+                stock.fundamental.stats.current_share_outstanding,
             ]
             sheet_values.append(row)
 
         return sheet_values
 
     def analysis_sheet(self) -> []:
+        """
+        Generates a sheet of analysis for each stock that derives from fundamental.
+
+        Returns:
+        - list of list: A list of rows, each containing key statistics for a stock.
+        """
         headers = [
             "Ticker",
             "PBV x ROE",
@@ -273,7 +304,9 @@ class FundamentalAnalyser:
         ]
 
         sheet_values = [headers]
-        for fundamental in self.fundamentals:
+        for stock in self.stocks:
+            fundamental = stock.fundamental
+
             normal_price = (
                 fundamental.per_share.current_book_value_per_share
                 * fundamental.management_effectiveness.return_on_equity_ttm
