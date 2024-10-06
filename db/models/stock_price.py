@@ -1,11 +1,11 @@
 from sqlalchemy import BigInteger, ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from db.models import BaseModel, FLOAT
 
 
 class StockPrice(BaseModel):
-    __tablename__ = "stock_price"
+    __tablename__ = "stock_prices"
 
     price: Mapped[FLOAT]
     volume = mapped_column(BigInteger, default=0)
@@ -23,3 +23,4 @@ class StockPrice(BaseModel):
     fbuy: Mapped[FLOAT]
 
     stock_ticker = mapped_column(ForeignKey("stocks.ticker"))
+    stock: Mapped["Stock"] = relationship(back_populates="stock_prices")

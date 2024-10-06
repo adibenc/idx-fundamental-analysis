@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from db import BaseModel, FLOAT
 
@@ -21,3 +21,4 @@ class KeyAnalysis(BaseModel):
     net_debt_to_equity_ratio: Mapped[FLOAT]
 
     stock_ticker = mapped_column(String, ForeignKey("stocks.ticker"))
+    stock: Mapped["Stock"] = relationship(back_populates="key_analyses")

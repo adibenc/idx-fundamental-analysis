@@ -15,7 +15,7 @@ class Stock(BaseModel):
     market_cap: Mapped[FLOAT]
     home_page: Mapped[VARCHAR]
 
-    stock_prices: Mapped[List["StockPrice"]] = relationship(backref="stock")
-    fundamentals: Mapped[List["Fundamental"]] = relationship(backref="stock")
-    sentiments: Mapped[List["Sentiment"]] = relationship(backref="stock")
-    key_analyses: Mapped[List["KeyAnalysis"]] = relationship(backref="stock")
+    stock_prices: Mapped[List["StockPrice"]] = relationship(back_populates="stock")
+    fundamentals: Mapped[List["Fundamental"]] = relationship(back_populates="stock")
+    sentiments: Mapped[List["Sentiment"]] = relationship(back_populates="stock")
+    key_analyses: Mapped[List["KeyAnalysis"]] = relationship(back_populates="stock")

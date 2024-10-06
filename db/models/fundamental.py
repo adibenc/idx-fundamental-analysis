@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Relationship, mapped_column, Mapped, relationship
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from db.models import BaseModel, FLOAT
 
@@ -8,22 +8,70 @@ class Fundamental(BaseModel):
     __tablename__ = "fundamentals"
 
     stats_id = mapped_column(ForeignKey("stats.id"))
+    stat: Mapped["Stat"] = relationship(back_populates="fundamental", uselist=False)
+
     current_valuation_id = mapped_column(ForeignKey("current_valuations.id"))
+    current_valuation: Mapped["CurrentValuation"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     per_share_id = mapped_column(ForeignKey("per_shares.id"))
+    per_share: Mapped["PerShare"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     solvency_id = mapped_column(ForeignKey("solvencies.id"))
+    solvency: Mapped["Solvency"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     management_effectiveness_id = mapped_column(
         ForeignKey("management_effectivenesses.id")
     )
+    management_effectiveness: Mapped["ManagementEffectiveness"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     profitability_id = mapped_column(ForeignKey("profitabilities.id"))
+    profitability: Mapped["Profitability"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     growth_id = mapped_column(ForeignKey("growths.id"))
+    growth: Mapped["Growth"] = relationship(back_populates="fundamental", uselist=False)
+
     dividend_id = mapped_column(ForeignKey("dividends.id"))
+    dividend: Mapped["Dividend"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     market_rank_id = mapped_column(ForeignKey("market_ranks.id"))
+    market_rank: Mapped["MarketRank"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     income_statement_id = mapped_column(ForeignKey("income_statements.id"))
+    income_statement: Mapped["IncomeStatement"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     balance_sheet_id = mapped_column(ForeignKey("balance_sheets.id"))
+    balance_sheet: Mapped["BalanceSheet"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     cash_flow_statement_id = mapped_column(ForeignKey("cash_flow_statements.id"))
+    cash_flow_statement: Mapped["CashFlowStatement"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
+
     price_performance_id = mapped_column(ForeignKey("price_performances.id"))
+    price_performance: Mapped["PricePerformance"] = relationship(
+        back_populates="fundamental", uselist=False
+    )
 
     stock_ticker = mapped_column(ForeignKey("stocks.ticker"))
+    stock: Mapped["Stock"] = relationship(back_populates="fundamentals")
 
 
 class CurrentValuation(BaseModel):
@@ -44,7 +92,9 @@ class CurrentValuation(BaseModel):
     peg_ratio_3yr: Mapped[FLOAT]
     peg_forward: Mapped[FLOAT]
 
-    fundamental = Relationship("Fundamental", backref="current_valuation")
+    fundamental: Mapped["Fundamental"] = relationship(
+        back_populates="current_valuation"
+    )
 
 
 class PerShare(BaseModel):
@@ -57,7 +107,7 @@ class PerShare(BaseModel):
     current_book_value_per_share: Mapped[FLOAT]
     free_cashflow_per_share_ttm: Mapped[FLOAT]
 
-    fundamental = Relationship("Fundamental", backref="per_share")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="per_share")
 
 
 class Solvency(BaseModel):
@@ -73,7 +123,8 @@ class Solvency(BaseModel):
     interest_rate_coverage_ttm: Mapped[FLOAT]
     free_cash_flow_quarter: Mapped[FLOAT]
     altman_z_score_modified: Mapped[FLOAT]
-    fundamental: Mapped["Fundamental"] = relationship(backref="solvency")
+
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="solvency")
 
 
 class ManagementEffectiveness(BaseModel):
@@ -92,7 +143,7 @@ class ManagementEffectiveness(BaseModel):
     inventory_turnover_ttm: Mapped[FLOAT]
 
     fundamental: Mapped["Fundamental"] = relationship(
-        backref="management_effectiveness"
+        back_populates="management_effectiveness"
     )
 
 
@@ -103,7 +154,7 @@ class Profitability(BaseModel):
     operating_profit_margin_quarter: Mapped[FLOAT]
     net_profit_margin_quarter: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="profitability")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="profitability")
 
 
 class Growth(BaseModel):
@@ -112,7 +163,8 @@ class Growth(BaseModel):
     revenue_quarter_yoy_growth: Mapped[FLOAT]
     gross_profit_quarter_yoy_growth: Mapped[FLOAT]
     net_income_quarter_yoy_growth: Mapped[FLOAT]
-    fundamental: Mapped["Fundamental"] = relationship(backref="growth")
+
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="growth")
 
 
 class Dividend(BaseModel):
@@ -124,7 +176,7 @@ class Dividend(BaseModel):
     dividend_yield: Mapped[FLOAT]
     latest_dividend_ex_date = mapped_column(String, default="")
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="dividend")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="dividend")
 
 
 class MarketRank(BaseModel):
@@ -140,7 +192,7 @@ class MarketRank(BaseModel):
     rank_p_b: Mapped[FLOAT]
     rank_near_52_weeks_high: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="market_rank")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="market_rank")
 
 
 class IncomeStatement(BaseModel):
@@ -151,7 +203,7 @@ class IncomeStatement(BaseModel):
     ebitda_ttm: Mapped[FLOAT]
     net_income_ttm: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="income_statement")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="income_statement")
 
 
 class BalanceSheet(BaseModel):
@@ -167,7 +219,7 @@ class BalanceSheet(BaseModel):
     total_debt_quarter: Mapped[FLOAT]
     net_debt_quarter: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="balance_sheet")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="balance_sheet")
 
 
 class CashFlowStatement(BaseModel):
@@ -179,7 +231,9 @@ class CashFlowStatement(BaseModel):
     capital_expenditure_ttm: Mapped[FLOAT]
     free_cash_flow_ttm: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="cash_flow_statement")
+    fundamental: Mapped["Fundamental"] = relationship(
+        back_populates="cash_flow_statement"
+    )
 
 
 class PricePerformance(BaseModel):
@@ -197,14 +251,16 @@ class PricePerformance(BaseModel):
     fifty_two_week_high: Mapped[FLOAT]
     fifty_two_week_low: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="price_performance")
+    fundamental: Mapped["Fundamental"] = relationship(
+        back_populates="price_performance"
+    )
 
 
-class Stats(BaseModel):
+class Stat(BaseModel):
     __tablename__ = "stats"
 
     current_share_outstanding: Mapped[FLOAT]
     market_cap: Mapped[FLOAT]
     enterprise_value: Mapped[FLOAT]
 
-    fundamental: Mapped["Fundamental"] = relationship(backref="stat")
+    fundamental: Mapped["Fundamental"] = relationship(back_populates="stat")
