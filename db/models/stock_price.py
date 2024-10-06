@@ -1,24 +1,25 @@
-from sqlalchemy import String, Column, Float, BigInteger, ForeignKey
+from sqlalchemy import BigInteger, ForeignKey
+from sqlalchemy.orm import mapped_column, Mapped
 
-from db.models import BaseModel
+from db.models import BaseModel, FLOAT
 
 
 class StockPrice(BaseModel):
     __tablename__ = "stock_price"
 
-    price = Column(Float, default=0.0)
-    volume = Column(BigInteger, default=0)
-    change = Column(Float, default=0.0)
-    percentage_change = Column(Float, default=0.0)
-    average = Column(Float, default=0.0)
-    close = Column(Float, default=0.0)
-    high = Column(Float, default=0.0)
-    low = Column(Float, default=0.0)
-    open = Column(Float, default=0.0)
-    ara = Column(Float, default=0.0)
-    arb = Column(Float, default=0.0)
-    frequency = Column(Float, default=0.0)
-    fsell = Column(Float, default=0.0)
-    fbuy = Column(Float, default=0.0)
+    price: Mapped[FLOAT]
+    volume = mapped_column(BigInteger, default=0)
+    change: Mapped[FLOAT]
+    percentage_change: Mapped[FLOAT]
+    average: Mapped[FLOAT]
+    close: Mapped[FLOAT]
+    high: Mapped[FLOAT]
+    low: Mapped[FLOAT]
+    open: Mapped[FLOAT]
+    ara: Mapped[FLOAT]
+    arb: Mapped[FLOAT]
+    frequency: Mapped[FLOAT]
+    fsell: Mapped[FLOAT]
+    fbuy: Mapped[FLOAT]
 
-    stock_ticker = Column(String, ForeignKey("stocks.ticker"))
+    stock_ticker = mapped_column(ForeignKey("stocks.ticker"))

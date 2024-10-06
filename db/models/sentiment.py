@@ -1,14 +1,15 @@
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy.orm import mapped_column, Mapped
 
-from db.models import BaseModel
+from db.models import BaseModel, VARCHAR, FLOAT
 
 
 class Sentiment(BaseModel):
     __tablename__ = "sentiments"
 
-    content = Column(String, default="")
-    rate = Column(Float, default=0.0)
-    category = Column(String, default="")
-    posted_at = Column(DateTime)
+    content: Mapped[VARCHAR]
+    rate: Mapped[FLOAT]
+    category: Mapped[VARCHAR]
+    posted_at = mapped_column(DateTime)
 
-    stock_ticker = Column(String, ForeignKey("stocks.ticker"))
+    stock_ticker = mapped_column(ForeignKey("stocks.ticker"))

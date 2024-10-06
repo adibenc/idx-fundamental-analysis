@@ -1,17 +1,27 @@
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
-from sqlalchemy import Column, Integer, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import func
+from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
+from typing_extensions import Annotated
 
-Base = declarative_base()
+INT_PK = Annotated[int, mapped_column(primary_key=True)]
+TIMESTAMP = Annotated[
+    datetime,
+    mapped_column(nullable=False, server_default=func.CURRENT_TIMESTAMP()),
+]
+VARCHAR = Annotated[str, mapped_column(default="")]
+FLOAT = Annotated[float, mapped_column(default=0.0)]
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class BaseModel(Base):
     __abstract__ = True  # This tells SQLAlchemy not to create a table for this class
 
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.now(ZoneInfo("UTC")))
+    id: Mapped[INT_PK]
+    created_at: Mapped[TIMESTAMP]
 
     def save(self, session):
         session.add(self)

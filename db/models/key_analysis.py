@@ -1,22 +1,23 @@
-from sqlalchemy import Column, Float, ForeignKey, String
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import mapped_column, Mapped
 
-from db import BaseModel
+from db import BaseModel, FLOAT
 
 
 class KeyAnalysis(BaseModel):
-    __tablename__ = "key_analysis"
+    __tablename__ = "key_analyses"
 
-    normal_price = Column(Float, default=0.0)
-    price_to_equity_discount = Column(Float, default=0.0)
-    relative_pe_ratio_ttm = Column(Float, default=0.0)
-    eps_growth = Column(Float, default=0.0)
-    debt_to_total_assets_ratio = Column(Float, default=0.0)
-    liquidity_differential = Column(Float, default=0.0)
-    cce = Column(Float, default=0.0)
-    operating_efficiency = Column(Float, default=0.0)
-    dividend_payout_efficiency = Column(Float, default=0.0)
-    yearly_price_change = Column(Float, default=0.0)
-    composite_rank = Column(Float, default=0.0)
-    net_debt_to_equity_ratio = Column(Float, default=0.0)
+    normal_price: Mapped[FLOAT]
+    price_to_equity_discount: Mapped[FLOAT]
+    relative_pe_ratio_ttm: Mapped[FLOAT]
+    eps_growth: Mapped[FLOAT]
+    debt_to_total_assets_ratio: Mapped[FLOAT]
+    liquidity_differential: Mapped[FLOAT]
+    cce: Mapped[FLOAT]
+    operating_efficiency: Mapped[FLOAT]
+    dividend_payout_efficiency: Mapped[FLOAT]
+    yearly_price_change: Mapped[FLOAT]
+    composite_rank: Mapped[FLOAT]
+    net_debt_to_equity_ratio: Mapped[FLOAT]
 
-    stock_ticker = Column(String, ForeignKey("stocks.ticker"))
+    stock_ticker = mapped_column(String, ForeignKey("stocks.ticker"))

@@ -1,20 +1,21 @@
-from sqlalchemy import Column, String, Float
-from sqlalchemy.orm import Relationship
+from typing import List
 
-from db.models import BaseModel
+from sqlalchemy.orm import mapped_column, Mapped, relationship
+
+from db.models import BaseModel, VARCHAR, FLOAT
 
 
 class Stock(BaseModel):
     __tablename__ = "stocks"
 
-    ticker = Column(String, index=True, nullable=False, unique=True)
-    name = Column(String, default="")
-    ipo_date = Column(String, default="")
-    note = Column(String, default="")
-    market_cap = Column(Float, default=0.0)
-    home_page = Column(String, default="")
+    ticker: Mapped[VARCHAR] = mapped_column(index=True, nullable=False, unique=True)
+    name: Mapped[VARCHAR]
+    ipo_date: Mapped[VARCHAR]
+    note: Mapped[VARCHAR]
+    market_cap: Mapped[FLOAT]
+    home_page: Mapped[VARCHAR]
 
-    stock_price = Relationship("StockPrice", backref="stock")
-    fundamental = Relationship("Fundamental", backref="stock")
-    sentiments = Relationship("Sentiment", backref="stock")
-    key_analysis = Relationship("KeyAnalysis", backref="stock")
+    stock_prices: Mapped[List["StockPrice"]] = relationship(backref="stock")
+    fundamentals: Mapped[List["Fundamental"]] = relationship(backref="stock")
+    sentiments: Mapped[List["Sentiment"]] = relationship(backref="stock")
+    key_analyses: Mapped[List["KeyAnalysis"]] = relationship(backref="stock")
