@@ -142,7 +142,7 @@ class PricePerformance(BaseDataClass):
 
 
 @dataclass
-class Stats(BaseDataClass):
+class Stat(BaseDataClass):
     current_share_outstanding: float = 0.0
     market_cap: float = 0.0
     enterprise_value: float = 0.0
@@ -150,7 +150,7 @@ class Stats(BaseDataClass):
 
 @dataclass
 class Fundamental(BaseDataClass):
-    stats: Stats = Stats
+    stat: Stat = Stat
     current_valuation: CurrentValuation = CurrentValuation
     per_share: PerShare = PerShare
     solvency: Solvency = Solvency

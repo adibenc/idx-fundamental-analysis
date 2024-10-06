@@ -17,7 +17,7 @@ from schemas.fundamental import (
     CashFlowStatement,
     PricePerformance,
     CurrentValuation,
-    Stats,
+    Stat,
 )
 from schemas.sentiment import Sentiment
 from schemas.stock import Stock
@@ -113,13 +113,13 @@ class StockBit:
 
         # Stats
         #
-        stats = Stats(
+        stat = Stat(
             parse_currency_to_float(data["stats"]["current_share_outstanding"]),
             parse_currency_to_float(data["stats"]["market_cap"]),
             parse_currency_to_float(data["stats"]["enterprise_value"]),
         )
-        fundamental.stats = stats
-        logger.debug(stats)
+        fundamental.stat = stat
+        logger.debug(stat)
 
         # -- nested object
         closure_fin_items_results = data["closure_fin_items_results"]

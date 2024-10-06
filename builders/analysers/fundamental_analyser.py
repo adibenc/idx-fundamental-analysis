@@ -237,9 +237,9 @@ class FundamentalAnalyser:
                 stock.fundamental.price_performance.year_to_date_price_returns,
                 stock.fundamental.price_performance.fifty_two_week_high,
                 stock.fundamental.price_performance.fifty_two_week_low,
-                stock.fundamental.stats.market_cap,
-                stock.fundamental.stats.enterprise_value,
-                stock.fundamental.stats.current_share_outstanding,
+                stock.fundamental.stat.market_cap,
+                stock.fundamental.stat.enterprise_value,
+                stock.fundamental.stat.current_share_outstanding,
             ]
             sheet_values.append(row)
 

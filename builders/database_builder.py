@@ -15,7 +15,7 @@ from db import (
     BalanceSheet,
     CashFlowStatement,
     PricePerformance,
-    Stats,
+    Stat,
     Fundamental,
 )
 from db.models.stock import Stock
@@ -73,7 +73,7 @@ class DatabaseBuilder(BuilderInterface):
                 price_performance = PricePerformance(
                     **stock.fundamental.price_performance.to_dict()
                 )
-                stats = Stats(**stock.fundamental.stats.to_dict())
+                stats = Stat(**stock.fundamental.stat.to_dict())
 
                 # Add all instances to the session
                 session.add_all(
