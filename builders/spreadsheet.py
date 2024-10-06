@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
 from builders.analysers.key_analysis_analyser import KeyAnalysisAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
+from builders.analysers.stock_price_analyser import StockPriceAnalyser
 from builders.builder_interface import BuilderInterface
 from services.google_drive_service import GoogleDriveService
 from utils.logger_config import logger
@@ -29,6 +30,7 @@ class Spreadsheet(BuilderInterface):
         fundamental_analyser: FundamentalAnalyser,
         sentiment_analyser: SentimentAnalyser,
         key_analysis_analyser: KeyAnalysisAnalyser,
+        stock_price_analyser: StockPriceAnalyser,
     ):
         """
         Initializes the Spreadsheet class with a title and creates a new spreadsheet.
@@ -42,6 +44,7 @@ class Spreadsheet(BuilderInterface):
         self.spreadsheet_id = ""
         self.sentiment_analyser = sentiment_analyser
         self.key_analysis_analyser = key_analysis_analyser
+        self.stock_price_analyser = stock_price_analyser
         self._create()
 
     def _create(self):
@@ -82,7 +85,7 @@ class Spreadsheet(BuilderInterface):
             f"Key statistics has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
         )
 
-    def insert_analysis(self):
+    def insert_key_analysis(self):
         """
         Inserts fundamental analysis data into the spreadsheet.
         """
@@ -97,13 +100,28 @@ class Spreadsheet(BuilderInterface):
 
     def insert_sentiment(self):
         """
-        Inserts fundamental analysis data into the spreadsheet.
+        Inserts sentiment analysis data into the spreadsheet.
         """
 
         self.google_drive_service.insert_data(
             self.spreadsheet_id,
             "sentiments",
             self.sentiment_analyser.sentiment_sheet(),
+        )
+
+        logger.info(
+            f"Sentiment has been inserted on https://docs.google.com/spreadsheets/d/{self.spreadsheet_id}"
+        )
+
+    def insert_stock_price(self):
+        """
+        Inserts stock price data into the spreadsheet.
+        """
+
+        self.google_drive_service.insert_data(
+            self.spreadsheet_id,
+            "stock-prices",
+            self.stock_price_analyser.stock_price_sheet(),
         )
 
         logger.info(

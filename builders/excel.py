@@ -1,5 +1,6 @@
 import openpyxl
 
+from builders.analysers import StockPriceAnalyser
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
 from builders.analysers.key_analysis_analyser import KeyAnalysisAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
@@ -14,11 +15,13 @@ class Excel(BuilderInterface):
         fundamental_analyser: FundamentalAnalyser,
         sentiment_analyser: SentimentAnalyser,
         key_analysis_analyser: KeyAnalysisAnalyser,
+        stock_price_analyser: StockPriceAnalyser,
     ):
         self.filename = f"{title}.xlsx"
         self.fundamental_analyser = fundamental_analyser
         self.sentiment_analyser = sentiment_analyser
         self.key_analysis_analyser = key_analysis_analyser
+        self.stock_price_analyser = stock_price_analyser
 
         try:
             # Try to load an existing workbook
@@ -70,7 +73,7 @@ class Excel(BuilderInterface):
             "key-statistics", self.fundamental_analyser.key_statistics_sheet()
         )
 
-    def insert_analysis(self):
+    def insert_key_analysis(self):
         """
         Inserts fundamental analysis data into the spreadsheet.
         """
@@ -81,4 +84,12 @@ class Excel(BuilderInterface):
         """
         Inserts sentiment analysis data into the spreadsheet.
         """
-        self._write_to_sheet("sentiment", self.sentiment_analyser.sentiment_sheet())
+        self._write_to_sheet("sentiments", self.sentiment_analyser.sentiment_sheet())
+
+    def insert_stock_price(self):
+        """
+        Inserts stock price data into the spreadsheet.
+        """
+        self._write_to_sheet(
+            "stock-prices", self.stock_price_analyser.stock_price_sheet()
+        )

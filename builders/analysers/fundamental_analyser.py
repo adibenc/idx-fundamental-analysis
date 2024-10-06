@@ -25,27 +25,7 @@ class FundamentalAnalyser:
         Returns:
         - list of list: A list of rows, each containing basic stock information.
         """
-        header = [
-            "Ticker",
-            "Name",
-            "IPO Date",
-            "Market Cap",
-            "Note",
-            "Price",
-            "Volume",
-            "Change",
-            "Percentage Change",
-            "Average",
-            "Close Price",
-            "High Price",
-            "Open Price",
-            "Low Price",
-            "ARA Price",
-            "ARB Price",
-            "Frequency",
-            "Frequency Sell",
-            "Frequency Buy",
-        ]
+        header = ["Ticker", "Name", "IPO Date", "Market Cap", "Note"]
         sheet_values = [header]
         for stock in self.stocks:
             row = [
@@ -54,20 +34,6 @@ class FundamentalAnalyser:
                 stock.fundamental.stock.ipo_date,
                 stock.fundamental.stock.market_cap,
                 stock.fundamental.stock.note,
-                stock.fundamental.stock.price,
-                stock.fundamental.stock.volume,
-                stock.fundamental.stock.change,
-                stock.fundamental.stock.percentage_change,
-                stock.fundamental.stock.average,
-                stock.fundamental.stock.close,
-                stock.fundamental.stock.high,
-                stock.fundamental.stock.low,
-                stock.fundamental.stock.open,
-                stock.fundamental.stock.ara,
-                stock.fundamental.stock.arb,
-                stock.fundamental.stock.frequency,
-                stock.fundamental.stock.fsell,
-                stock.fundamental.stock.fbuy,
             ]
             sheet_values.append(row)
 

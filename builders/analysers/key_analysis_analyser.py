@@ -44,7 +44,9 @@ class KeyAnalysisAnalyser:
             )
 
             if normal_price > 0:
-                price_to_equity_disct = abs(1 - (stock.close / normal_price) * 100)
+                price_to_equity_disct = abs(
+                    1 - (stock.stock_price.close / normal_price) * 100
+                )
             else:
                 price_to_equity_disct = 0
 
@@ -172,7 +174,7 @@ class KeyAnalysisAnalyser:
             row = [
                 stock.ticker,
                 stock.key_analysis.normal_price,
-                stock.close,
+                stock.stock_price.close,
                 stock.key_analysis.price_to_equity_discount,
                 stock.key_analysis.relative_pe_ratio_ttm,
                 stock.key_analysis.eps_growth,

@@ -11,9 +11,13 @@ class BuilderInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def insert_analysis(self):
+    def insert_key_analysis(self):
         raise NotImplementedError
 
     @abstractmethod
     def insert_sentiment(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def insert_stock_price(self):
         raise NotImplementedError
