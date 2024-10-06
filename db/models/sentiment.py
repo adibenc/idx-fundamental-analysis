@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, String, Float, DateTime, ForeignKey
 
 from db.models import BaseModel
 
@@ -11,4 +11,4 @@ class Sentiment(BaseModel):
     category = Column(String, default="")
     posted_at = Column(DateTime)
 
-    stock_id = Column(Integer, ForeignKey("stocks.id"))
+    stock_ticker = Column(String, ForeignKey("stocks.ticker"))

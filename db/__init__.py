@@ -6,6 +6,7 @@ from db.models.fundamental import *
 from db.models.key_analysis import KeyAnalysis
 from db.models.sentiment import Sentiment
 from db.models.stock import Stock
+from db.models.stock_price import StockPrice
 
 
 class DB:

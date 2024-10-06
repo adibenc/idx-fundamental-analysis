@@ -21,6 +21,7 @@ from schemas.fundamental import (
 )
 from schemas.sentiment import Sentiment
 from schemas.stock import Stock
+from schemas.stock_price import StockPrice
 from utils.helpers import (
     parse_currency_to_float,
     parse_key_statistic_results_item_value,
@@ -453,20 +454,22 @@ class StockBit:
 
             data = response["data"]
 
-            stock.price = data["lastprice"]
-            stock.change = data["change"]
-            stock.fbuy = data["fbuy"]
-            stock.fsell = data["fsell"]
-            stock.volume = data["volume"]
-            stock.percentage_change = data["percentage_change"]
-            stock.average = data["average"]
-            stock.close = data["close"]
-            stock.high = data["high"]
-            stock.low = data["low"]
-            stock.open = data["open"]
-            stock.ara = float(data["ara"]["value"].replace(",", ""))
-            stock.arb = float(data["arb"]["value"].replace(",", ""))
-            stock.frequency = data["frequency"]
+            stock.stock_price = StockPrice(
+                price=data["lastprice"],
+                change=data["change"],
+                fbuy=data["fbuy"],
+                fsell=data["fsell"],
+                volume=data["volume"],
+                percentage_change=data["percentage_change"],
+                average=data["average"],
+                close=data["close"],
+                high=data["high"],
+                low=data["low"],
+                open=data["open"],
+                ara=float(data["ara"]["value"].replace(",", "")),
+                arb=float(data["arb"]["value"].replace(",", "")),
+                frequency=data["frequency"],
+            )
 
             time.sleep(0.1)
 

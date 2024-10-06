@@ -23,7 +23,7 @@ class Fundamental(BaseModel):
     cash_flow_statement_id = Column(Integer, ForeignKey("cash_flow_statements.id"))
     price_performance_id = Column(Integer, ForeignKey("price_performances.id"))
 
-    stock_id = Column(Integer, ForeignKey("stocks.id"))
+    stock_ticker = Column(String, ForeignKey("stocks.ticker"))
 
 
 class CurrentValuation(BaseModel):

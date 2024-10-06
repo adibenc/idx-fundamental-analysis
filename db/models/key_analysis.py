@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, ForeignKey
+from sqlalchemy import Column, Float, ForeignKey, String
 
 from db import BaseModel
 
@@ -19,4 +19,4 @@ class KeyAnalysis(BaseModel):
     composite_rank = Column(Float, default=0.0)
     net_debt_to_equity_ratio = Column(Float, default=0.0)
 
-    stock_id = Column(Integer, ForeignKey("stocks.id"))
+    stock_ticker = Column(String, ForeignKey("stocks.ticker"))
