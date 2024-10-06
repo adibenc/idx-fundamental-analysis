@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from typing_extensions import Annotated
 
@@ -30,3 +30,13 @@ class BaseModel(Base):
     def delete(self, session):
         session.delete(self)
         session.commit()
+
+    @classmethod
+    def all(cls, session):
+        stmt = select(cls)
+        return session.scalars(stmt)
+
+    @classmethod
+    def find_by_id(cls, session, id):
+        stmt = select(cls).where(cls.id == id)
+        return session.scalars(stmt).first()
