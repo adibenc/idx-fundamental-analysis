@@ -52,7 +52,7 @@ class IDX:
     IDX Provider Class
     """
 
-    def __init__(self, is_full_retrieve=True):
+    def __init__(self, is_full_retrieve=True, is_second_page=False):
         """
         Initializes the IDX provider with a Chrome WebDriver instance and sets the base URL for the IDX website.
         """
@@ -60,6 +60,7 @@ class IDX:
         self.base_url = "https://idx.co.id"
         self.driver = webdriver.Chrome()
         self.is_full_retrieve = is_full_retrieve
+        self.is_second_page = is_second_page
 
     def stocks(self) -> [Stock]:
         """
@@ -86,6 +87,18 @@ class IDX:
 
             # Select the option to retrieve all stocks
             rows_per_page_dropdown.select_by_value("-1")
+
+        if self.is_second_page:
+            # go to second page
+            WebDriverWait(self.driver, 3).until(
+                expect.presence_of_element_located((By.NAME, "perPageSelect"))
+            )
+
+            third_button = self.driver.find_element(
+                By.CSS_SELECTOR, "button.footer__navigation__page-btn:nth-child(4)"
+            )
+
+            third_button.click()
 
         # Wait for the table to update, adjust the time if necessary
         WebDriverWait(self.driver, 3).until(
