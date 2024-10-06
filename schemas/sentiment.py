@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from schemas import BaseDataClass
+
 
 @dataclass
-class Sentiment:
+class Sentiment(BaseDataClass):
     content: str = ""
-    rate: float = ""
+    rate: float = 0.0
     category: str = ""
     posted_at: datetime = None

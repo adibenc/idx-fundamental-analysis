@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from schemas import BaseDataClass
+
 
 @dataclass
-class KeyAnalysis:
+class KeyAnalysis(BaseDataClass):
     normal_price: float = 0.0
     price_to_equity_discount: float = 0.0
     relative_pe_ratio_ttm: float = 0.0

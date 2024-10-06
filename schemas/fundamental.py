@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from schemas import BaseDataClass
+
 
 @dataclass
-class CurrentValuation:
+class CurrentValuation(BaseDataClass):
     current_pe_ratio_annual: float = 0.0
     current_pe_ratio_ttm: float = 0.0
     forward_pe_ratio: float = 0.0
@@ -20,7 +22,7 @@ class CurrentValuation:
 
 
 @dataclass
-class PerShare:
+class PerShare(BaseDataClass):
     current_eps_ttm: float = 0
     current_eps_annualised: float = 0
     revenue_per_share_ttm: float = 0
@@ -30,7 +32,7 @@ class PerShare:
 
 
 @dataclass
-class Solvency:
+class Solvency(BaseDataClass):
     current_ratio_quarter: float = 0
     quick_ratio_quarter: float = 0
     debt_to_equity_ratio_quarter: float = 0
@@ -44,7 +46,7 @@ class Solvency:
 
 
 @dataclass
-class ManagementEffectiveness:
+class ManagementEffectiveness(BaseDataClass):
     return_on_assets_ttm: float = 0
     return_on_equity_ttm: float = 0
     return_on_capital_employed_ttm: float = 0
@@ -59,21 +61,21 @@ class ManagementEffectiveness:
 
 
 @dataclass
-class Profitability:
+class Profitability(BaseDataClass):
     gross_profit_margin_quarter: float = 0.0
     operating_profit_margin_quarter: float = 0.0
     net_profit_margin_quarter: float = 0.0
 
 
 @dataclass
-class Growth:
+class Growth(BaseDataClass):
     revenue_quarter_yoy_growth: float = 0.0
     gross_profit_quarter_yoy_growth: float = 0.0
     net_income_quarter_yoy_growth: float = 0.0
 
 
 @dataclass
-class Dividend:
+class Dividend(BaseDataClass):
     dividend: float = 0.0
     dividend_ttm: float = 0.0
     payout_ratio: float = 0.0
@@ -82,7 +84,7 @@ class Dividend:
 
 
 @dataclass
-class MarketRank:
+class MarketRank(BaseDataClass):
     piotroski_f_score: float = 0.0
     eps_rating: float = 0.0
     relative_strength_rating: float = 0.0
@@ -95,7 +97,7 @@ class MarketRank:
 
 
 @dataclass
-class IncomeStatement:
+class IncomeStatement(BaseDataClass):
     revenue_ttm: float = 0.0
     gross_profit_ttm: float = 0.0
     ebitda_ttm: float = 0.0
@@ -103,7 +105,7 @@ class IncomeStatement:
 
 
 @dataclass
-class BalanceSheet:
+class BalanceSheet(BaseDataClass):
     cash_quarter: float = 0.0
     total_assets_quarter: float = 0.0
     total_liabilities_quarter: float = 0.0
@@ -116,7 +118,7 @@ class BalanceSheet:
 
 
 @dataclass
-class CashFlowStatement:
+class CashFlowStatement(BaseDataClass):
     cash_from_operations_ttm: float = 0.0
     cash_from_investing_ttm: float = 0.0
     cash_from_financing_ttm: float = 0.0
@@ -125,7 +127,7 @@ class CashFlowStatement:
 
 
 @dataclass
-class PricePerformance:
+class PricePerformance(BaseDataClass):
     one_week_price_returns: float = 0.0
     three_month_price_returns: float = 0.0
     one_month_price_returns: float = 0.0
@@ -140,14 +142,14 @@ class PricePerformance:
 
 
 @dataclass
-class Stats:
+class Stats(BaseDataClass):
     current_share_outstanding: float = 0.0
     market_cap: float = 0.0
     enterprise_value: float = 0.0
 
 
 @dataclass
-class Fundamental:
+class Fundamental(BaseDataClass):
     stats: Stats = Stats
     current_valuation: CurrentValuation = CurrentValuation
     per_share: PerShare = PerShare
