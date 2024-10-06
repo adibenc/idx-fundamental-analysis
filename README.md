@@ -2,7 +2,8 @@
 
 ## Description
 
-IDX Fundamental Analysis project aims to retrieve and analyse fundamental stock data of companies listed on the Indonesian
+IDX Fundamental Analysis project aims to retrieve and analyse fundamental stock data of companies listed on the
+Indonesian
 Stock Exchange (IDX). It fetches stock data and key statistics using Selenium, requests, and various provider APIs, and
 stores the resultant data in Google Sheets or local Excel file for easy access and analysis.
 
@@ -13,6 +14,7 @@ stores the resultant data in Google Sheets or local Excel file for easy access a
 - **Google Sheets Integration**: Create and update Google Sheets with stock data using Google Drive API. Required
   Google Service Account environment variable.
 - **Save as Excel**: Stored the fundamental analysis data in your local file.
+- **Store to SQLite**: Stored all data to persistent storage.
 - **Logging**: Robust logging using Loguru for debugging and tracking purposes.
 
 ## Installation
@@ -99,18 +101,18 @@ verifying the output in the Google Sheet.
 ## Result
 
 ### File [Limited only 10 stocks]
+
 - [IDX Fundamental Analysis 05-10-2024](https://drive.zeroinside.id/s/2eakERgsZCMfRPx)
 
 ### Screencast
-![demo-idx-fundamental](https://github.com/user-attachments/assets/c365cd75-fed7-41c9-8719-17bf36dc97cb)
 
+![demo-idx-fundamental](https://github.com/user-attachments/assets/c365cd75-fed7-41c9-8719-17bf36dc97cb)
 
 ## TODO
 
-1. Stored data to SQLlite database.
-2. Dashboard support using Streamlit.
-3. Sentiment Analysis using LLMs, will use OpenAI and Ollama.
-4. Time Series Forecasting using ETS, ARIMA, and Prophet.
+1. Dashboard support using Streamlit.
+2. Sentiment Analysis using LLMs, will use OpenAI and Ollama.
+3. Time Series Forecasting using ETS, ARIMA, and Prophet.
 
 ## License
 
