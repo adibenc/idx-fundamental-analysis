@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from schemas.fundamental import Fundamental
+from schemas.key_analysis import KeyAnalysis
 from schemas.sentiment import Sentiment
 
 
@@ -29,3 +30,4 @@ class Stock:
     home_page: str = ""
     sentiment: List[Sentiment] = None
     fundamental: Fundamental = None
+    key_analysis: KeyAnalysis = None

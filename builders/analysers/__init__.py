@@ -1,4 +1,5 @@
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.key_analysis_analyser import KeyAnalysisAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
 from builders.excel import Excel
 from builders.spreadsheet import Spreadsheet
@@ -10,6 +11,7 @@ class Analyser:
         self.stocks = stocks
         self.fundamental_analyser = FundamentalAnalyser(stocks=stocks)
         self.sentiment_analyser = SentimentAnalyser(stocks=stocks)
+        self.key_analysis_analyser = KeyAnalysisAnalyser(stocks=stocks)
 
     def build(self, output: str, title: str):
         if output == "excel":
@@ -24,6 +26,7 @@ class Analyser:
             title=title,
             fundamental_analyser=self.fundamental_analyser,
             sentiment_analyser=self.sentiment_analyser,
+            key_analysis_analyser=self.key_analysis_analyser,
         )
         builder.insert_analysis()
         builder.insert_stock()

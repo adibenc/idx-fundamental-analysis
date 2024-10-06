@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.key_analysis_analyser import KeyAnalysisAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
 from builders.builder_interface import BuilderInterface
 from services.google_drive_service import GoogleDriveService
@@ -27,6 +28,7 @@ class Spreadsheet(BuilderInterface):
         title: str,
         fundamental_analyser: FundamentalAnalyser,
         sentiment_analyser: SentimentAnalyser,
+        key_analysis_analyser: KeyAnalysisAnalyser,
     ):
         """
         Initializes the Spreadsheet class with a title and creates a new spreadsheet.
@@ -39,6 +41,7 @@ class Spreadsheet(BuilderInterface):
         self.google_drive_service = GoogleDriveService()
         self.spreadsheet_id = ""
         self.sentiment_analyser = sentiment_analyser
+        self.key_analysis_analyser = key_analysis_analyser
         self._create()
 
     def _create(self):
@@ -85,7 +88,7 @@ class Spreadsheet(BuilderInterface):
         """
 
         self.google_drive_service.insert_data(
-            self.spreadsheet_id, "analyses", self.fundamental_analyser.analysis_sheet()
+            self.spreadsheet_id, "analyses", self.key_analysis_analyser.analysis_sheet()
         )
 
         logger.info(

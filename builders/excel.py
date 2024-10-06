@@ -1,6 +1,7 @@
 import openpyxl
 
 from builders.analysers.fundamental_analyser import FundamentalAnalyser
+from builders.analysers.key_analysis_analyser import KeyAnalysisAnalyser
 from builders.analysers.sentiment_analyser import SentimentAnalyser
 from builders.builder_interface import BuilderInterface
 from utils.logger_config import logger
@@ -12,10 +13,12 @@ class Excel(BuilderInterface):
         title: str,
         fundamental_analyser: FundamentalAnalyser,
         sentiment_analyser: SentimentAnalyser,
+        key_analysis_analyser: KeyAnalysisAnalyser,
     ):
         self.filename = f"{title}.xlsx"
         self.fundamental_analyser = fundamental_analyser
         self.sentiment_analyser = sentiment_analyser
+        self.key_analysis_analyser = key_analysis_analyser
 
         try:
             # Try to load an existing workbook
@@ -72,7 +75,7 @@ class Excel(BuilderInterface):
         Inserts fundamental analysis data into the spreadsheet.
         """
 
-        self._write_to_sheet("analysis", self.fundamental_analyser.analysis_sheet())
+        self._write_to_sheet("analysis", self.key_analysis_analyser.analysis_sheet())
 
     def insert_sentiment(self):
         """
