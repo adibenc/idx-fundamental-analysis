@@ -54,7 +54,12 @@ def main():
     Analyser(stocks=stocks).build(output=args.output_format, title=title)
 
     # Populate to database
-    DatabaseBuilder(stocks=stocks).insert_stock()
+    database_builder = DatabaseBuilder(stocks=stocks)
+    database_builder.insert_stock()
+    database_builder.insert_key_statistic()
+    database_builder.insert_key_analysis()
+    database_builder.insert_stock_price()
+    database_builder.insert_sentiment()
 
 
 if __name__ == "__main__":
