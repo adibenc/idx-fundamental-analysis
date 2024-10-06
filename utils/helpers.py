@@ -1,3 +1,5 @@
+import os
+
 from utils.logger_config import logger
 
 
@@ -133,3 +135,13 @@ def get_sheet_range(num_columns, num_rows):
     end_column_letter = get_column_letter(num_columns)
     end_cell = f"{end_column_letter}{num_rows}"
     return f"{start_cell}:{end_cell}"
+
+
+def get_project_root():
+    # Get the current file's directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Navigate up to the project root (adjust the number of '..' as needed)
+    project_root = os.path.abspath(os.path.join(current_dir, ".."))  # Adjust if deeper
+
+    return project_root

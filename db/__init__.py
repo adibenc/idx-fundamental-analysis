@@ -1,3 +1,6 @@
+import logging
+import os
+
 from sqlalchemy import create_engine
 
 from db.models import Base
@@ -6,11 +9,21 @@ from db.models.key_analysis import KeyAnalysis
 from db.models.sentiment import Sentiment
 from db.models.stock import Stock
 from db.models.stock_price import StockPrice
+from utils.helpers import get_project_root
+from utils.logger_config import InterceptHandler
+
+# Set the base directory to the project root
+base_dir = get_project_root()
+
+# Define the path to the database file relative to the project root
+db_path = os.path.join(base_dir, "db/idx-fundamental.db")
+
+logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 
 class DB:
     def __init__(self):
-        self._engine = create_engine("sqlite:///./db/idx-fundamental.db")
+        self._engine = create_engine(f"sqlite:///{db_path}", echo=True)
 
     def setup_db(self, is_drop_table: bool = False):
         with self._engine.begin() as conn:
@@ -24,3 +37,6 @@ class DB:
     @property
     def engine(self):
         return self._engine
+
+
+database = DB()
