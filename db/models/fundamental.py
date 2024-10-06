@@ -8,66 +8,54 @@ class Fundamental(BaseModel):
     __tablename__ = "fundamentals"
 
     stats_id = mapped_column(ForeignKey("stats.id"))
-    stat: Mapped["Stat"] = relationship(back_populates="fundamental", uselist=False)
+    stat: Mapped["Stat"] = relationship(back_populates="fundamental")
 
     current_valuation_id = mapped_column(ForeignKey("current_valuations.id"))
     current_valuation: Mapped["CurrentValuation"] = relationship(
-        back_populates="fundamental", uselist=False
+        back_populates="fundamental"
     )
 
     per_share_id = mapped_column(ForeignKey("per_shares.id"))
-    per_share: Mapped["PerShare"] = relationship(
-        back_populates="fundamental", uselist=False
-    )
+    per_share: Mapped["PerShare"] = relationship(back_populates="fundamental")
 
     solvency_id = mapped_column(ForeignKey("solvencies.id"))
-    solvency: Mapped["Solvency"] = relationship(
-        back_populates="fundamental", uselist=False
-    )
+    solvency: Mapped["Solvency"] = relationship(back_populates="fundamental")
 
     management_effectiveness_id = mapped_column(
         ForeignKey("management_effectivenesses.id")
     )
     management_effectiveness: Mapped["ManagementEffectiveness"] = relationship(
-        back_populates="fundamental", uselist=False
+        back_populates="fundamental"
     )
 
     profitability_id = mapped_column(ForeignKey("profitabilities.id"))
-    profitability: Mapped["Profitability"] = relationship(
-        back_populates="fundamental", uselist=False
-    )
+    profitability: Mapped["Profitability"] = relationship(back_populates="fundamental")
 
     growth_id = mapped_column(ForeignKey("growths.id"))
-    growth: Mapped["Growth"] = relationship(back_populates="fundamental", uselist=False)
+    growth: Mapped["Growth"] = relationship(back_populates="fundamental")
 
     dividend_id = mapped_column(ForeignKey("dividends.id"))
-    dividend: Mapped["Dividend"] = relationship(
-        back_populates="fundamental", uselist=False
-    )
+    dividend: Mapped["Dividend"] = relationship(back_populates="fundamental")
 
     market_rank_id = mapped_column(ForeignKey("market_ranks.id"))
-    market_rank: Mapped["MarketRank"] = relationship(
-        back_populates="fundamental", uselist=False
-    )
+    market_rank: Mapped["MarketRank"] = relationship(back_populates="fundamental")
 
     income_statement_id = mapped_column(ForeignKey("income_statements.id"))
     income_statement: Mapped["IncomeStatement"] = relationship(
-        back_populates="fundamental", uselist=False
+        back_populates="fundamental"
     )
 
     balance_sheet_id = mapped_column(ForeignKey("balance_sheets.id"))
-    balance_sheet: Mapped["BalanceSheet"] = relationship(
-        back_populates="fundamental", uselist=False
-    )
+    balance_sheet: Mapped["BalanceSheet"] = relationship(back_populates="fundamental")
 
     cash_flow_statement_id = mapped_column(ForeignKey("cash_flow_statements.id"))
     cash_flow_statement: Mapped["CashFlowStatement"] = relationship(
-        back_populates="fundamental", uselist=False
+        back_populates="fundamental"
     )
 
     price_performance_id = mapped_column(ForeignKey("price_performances.id"))
     price_performance: Mapped["PricePerformance"] = relationship(
-        back_populates="fundamental", uselist=False
+        back_populates="fundamental"
     )
 
     stock_ticker = mapped_column(ForeignKey("stocks.ticker"))
