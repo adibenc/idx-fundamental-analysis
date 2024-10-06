@@ -57,6 +57,10 @@ class StockbitHttpRequest:
                 else:
                     raise ValueError("Unsupported HTTP method")
 
+                logger.debug(self.url)
+                logger.debug(response.status_code)
+                logger.debug(response.json())
+
                 if response.status_code == 200:
                     return response.json()
                 else:
@@ -126,6 +130,8 @@ class StockbitHttpRequest:
                 logger.error(
                     f"Error: Received status code {response.status_code} - {response.text}"
                 )
+
+            time.sleep(1)
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Request failed: {e}")

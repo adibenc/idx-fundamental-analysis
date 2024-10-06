@@ -432,8 +432,7 @@ class StockBit:
             f"{self.base_url}/company-price-feed/v2/orderbook/companies/{stock.ticker}"
         )
 
-        response = StockbitHttpRequest(url, self.request_headers).get()
-        return response["data"]
+        return StockbitHttpRequest(url, self.request_headers).get()
 
     def with_stock_price(self):
         """
@@ -447,7 +446,12 @@ class StockBit:
         - self: The instance of the class, allowing for method chaining.
         """
         for stock in self.stocks:
-            data = self.stock_price_by_stock(stock)
+            response = self.stock_price_by_stock(stock)
+
+            if response == {}:
+                continue
+
+            data = response["data"]
 
             stock.price = data["lastprice"]
             stock.change = data["change"]
