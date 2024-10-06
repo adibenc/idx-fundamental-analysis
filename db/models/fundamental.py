@@ -7,7 +7,7 @@ from db.models import BaseModel, FLOAT
 class Fundamental(BaseModel):
     __tablename__ = "fundamentals"
 
-    stats_id = mapped_column(ForeignKey("stats.id"))
+    stat_id = mapped_column(ForeignKey("stats.id"))
     stat: Mapped["Stat"] = relationship(back_populates="fundamental")
 
     current_valuation_id = mapped_column(ForeignKey("current_valuations.id"))

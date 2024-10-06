@@ -73,7 +73,7 @@ class DatabaseBuilder(BuilderInterface):
                 price_performance = PricePerformance(
                     **stock.fundamental.price_performance.to_dict()
                 )
-                stats = Stat(**stock.fundamental.stat.to_dict())
+                stat = Stat(**stock.fundamental.stat.to_dict())
 
                 # Add all instances to the session
                 session.add_all(
@@ -90,7 +90,7 @@ class DatabaseBuilder(BuilderInterface):
                         balance_sheet,
                         cash_flow_statement,
                         price_performance,
-                        stats,
+                        stat,
                     ]
                 )
 
@@ -98,7 +98,7 @@ class DatabaseBuilder(BuilderInterface):
 
                 # Create the Fundamental instance
                 fundamental = Fundamental(
-                    stats_id=stats.id,
+                    stat_id=stat.id,
                     current_valuation_id=current_valuation.id,
                     per_share_id=per_share.id,
                     solvency_id=solvency.id,
@@ -145,6 +145,7 @@ class DatabaseBuilder(BuilderInterface):
                         content=sentiment.content,
                         rate=sentiment.rate,
                         stock_ticker=stock.ticker,
+                        posted_at=sentiment.posted_at,
                     )
                     session.add(sentiment)
 
