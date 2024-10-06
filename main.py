@@ -4,6 +4,8 @@ from datetime import date
 from dotenv import load_dotenv
 
 from builders.analysers import Analyser
+from builders.database_builder import DatabaseBuilder
+from db import DB
 from providers.idx import IDX
 from providers.stockbit import StockBit
 from utils.logger_config import logger
@@ -34,6 +36,10 @@ def main():
 
     args = parse_arguments()
 
+    # Setup database
+    db = DB()
+    db.setup_db(is_drop_table=True)
+
     # Retrieve stocks from IDX
     idx = IDX(is_full_retrieve=args.full_retrieve)
     stocks = idx.stocks()
@@ -46,6 +52,9 @@ def main():
     # Analyser to build the output
     title = f"IDX Fundamental Analysis {date.today().strftime('%Y-%m-%d')}"
     Analyser(stocks=stocks).build(output=args.output_format, title=title)
+
+    # Populate to database
+    DatabaseBuilder(stocks=stocks).insert_stock()
 
 
 if __name__ == "__main__":

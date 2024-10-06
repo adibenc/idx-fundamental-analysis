@@ -22,6 +22,7 @@ openpyxl = "^3.1.5"
 crawl4ai = "^0.3.4"
 phidata = "^2.4.42"
 ollama = "^0.3.3"
+sqlalchemy = "^2.0.35"
 
 
 [build-system]
