@@ -22,12 +22,12 @@ from schemas.fundamental import (
 from schemas.sentiment import Sentiment
 from schemas.stock import Stock
 from schemas.stock_price import StockPrice
+from services.stockbit_api_client import StockbitApiClient
 from utils.helpers import (
     parse_currency_to_float,
     parse_key_statistic_results_item_value,
 )
 from utils.logger_config import logger
-from utils.stockbit_http_request import StockbitHttpRequest
 
 load_dotenv()
 
@@ -42,14 +42,10 @@ class StockBit:
         Initializes the StockBit provider with necessary headers and URL.
         """
         logger.info("StockBit provider initialised")
-        self.request_headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
         self.stocks = stocks
         self.base_url = "https://exodus.stockbit.com"
         self.key_statistic = None
-        self.stockbit_api = StockbitHttpRequest(self.request_headers)
+        self.stockbit_api_client = StockbitApiClient()
 
     def key_statistic_by_stock(self, stock: Stock) -> dict:
         """
@@ -73,7 +69,7 @@ class StockBit:
         """
         url = f"{self.base_url}/keystats/ratio/v1/{stock.ticker}?year_limit=10"
 
-        return self.stockbit_api.get(url)
+        return self.stockbit_api_client.get(url)
 
     def with_fundamental(self):
         """
@@ -434,7 +430,7 @@ class StockBit:
             f"{self.base_url}/company-price-feed/v2/orderbook/companies/{stock.ticker}"
         )
 
-        return self.stockbit_api.get(url)
+        return self.stockbit_api_client.get(url)
 
     def with_stock_price(self):
         """
@@ -495,7 +491,7 @@ class StockBit:
         """
         url = f"{self.base_url}/stream/v3/symbol/{stock.ticker}/pinned"
 
-        return self.stockbit_api.get(url)
+        return self.stockbit_api_client.get(url)
 
     def stream_by_stock(self, stock: Stock) -> dict:
         """
@@ -514,7 +510,7 @@ class StockBit:
         """
         url = f"{self.base_url}/stream/v3/symbol/{stock.ticker}"
         payload = {"category": "STREAM_CATEGORY_ALL", "last_stream_id": 0, "limit": 20}
-        return self.stockbit_api.post(url, payload)
+        return self.stockbit_api_client.post(url, payload)
 
     def with_stream_data(self):
         """
