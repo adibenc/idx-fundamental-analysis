@@ -49,6 +49,7 @@ class StockBit:
         self.stocks = stocks
         self.base_url = "https://exodus.stockbit.com"
         self.key_statistic = None
+        self.stockbit_api = StockbitHttpRequest(self.request_headers)
 
     def key_statistic_by_stock(self, stock: Stock) -> dict:
         """
@@ -72,7 +73,7 @@ class StockBit:
         """
         url = f"{self.base_url}/keystats/ratio/v1/{stock.ticker}?year_limit=10"
 
-        return StockbitHttpRequest(url, self.request_headers).get()
+        return self.stockbit_api.get(url)
 
     def with_fundamental(self):
         """
@@ -433,7 +434,7 @@ class StockBit:
             f"{self.base_url}/company-price-feed/v2/orderbook/companies/{stock.ticker}"
         )
 
-        return StockbitHttpRequest(url, self.request_headers).get()
+        return self.stockbit_api.get(url)
 
     def with_stock_price(self):
         """
@@ -494,7 +495,7 @@ class StockBit:
         """
         url = f"{self.base_url}/stream/v3/symbol/{stock.ticker}/pinned"
 
-        return StockbitHttpRequest(url, self.request_headers).get()
+        return self.stockbit_api.get(url)
 
     def stream_by_stock(self, stock: Stock) -> dict:
         """
@@ -513,7 +514,7 @@ class StockBit:
         """
         url = f"{self.base_url}/stream/v3/symbol/{stock.ticker}"
         payload = {"category": "STREAM_CATEGORY_ALL", "last_stream_id": 0, "limit": 20}
-        return StockbitHttpRequest(url, self.request_headers).post(payload)
+        return self.stockbit_api.post(url, payload)
 
     def with_stream_data(self):
         """
