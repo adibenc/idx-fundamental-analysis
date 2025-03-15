@@ -62,10 +62,13 @@ def parse_key_statistic_results_item_value(
     Side Effects:
         - Logs the name and value of the item at the debug level.
     """
-
-    value = result_item[key_index]["fitem"]["value"]
-    name = result_item[key_index]["fitem"]["name"]
-    logger.debug({name: value})
+    try:
+        value = result_item[key_index]["fitem"]["value"]
+        name = result_item[key_index]["fitem"]["name"]
+        logger.debug({name: value})
+    except IndexError:
+        logger.warning(f"IndexError: {result_item}")
+        return 0.0
 
     if name in ["Latest Dividend Ex-Date"]:
         return value

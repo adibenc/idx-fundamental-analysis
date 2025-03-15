@@ -44,72 +44,100 @@ class KeyAnalysisAnalyser:
             )
 
             if normal_price > 0:
-                price_to_equity_disct = abs(
-                    1 - (stock.stock_price.close / normal_price) * 100
-                )
+                try:
+                    price_to_equity_disct = abs(
+                        1 - (stock.stock_price.close / normal_price) * 100
+                    )
+                except AttributeError as _e:
+                    price_to_equity_disct = 0
             else:
                 price_to_equity_disct = 0
 
             if fundamental.current_valuation.ihsg_pe_ratio_ttm_median > 0:
-                relative_pe_ratio_ttm = (
-                    fundamental.market_rank.rank_current_pe_ratio_ttm
-                    / fundamental.current_valuation.ihsg_pe_ratio_ttm_median
-                )
+                try:
+                    relative_pe_ratio_ttm = (
+                        fundamental.market_rank.rank_current_pe_ratio_ttm
+                        / fundamental.current_valuation.ihsg_pe_ratio_ttm_median
+                    )
+                except AttributeError as _e:
+                    price_to_equity_disct = 0
             else:
                 relative_pe_ratio_ttm = 0
 
             if fundamental.per_share.current_eps_ttm > 0:
-                eps_growth = (
-                    fundamental.per_share.current_eps_annualised
-                    - fundamental.per_share.current_eps_ttm
-                ) / fundamental.per_share.current_eps_ttm
+                try:
+                    eps_growth = (
+                        fundamental.per_share.current_eps_annualised
+                        - fundamental.per_share.current_eps_ttm
+                    ) / fundamental.per_share.current_eps_ttm
+                except AttributeError as _e:
+                    eps_growth = 0
             else:
                 eps_growth = 0
 
             if fundamental.balance_sheet.total_assets_quarter > 0:
-                debt_to_total_assets_ratio = (
-                    fundamental.balance_sheet.total_debt_quarter
-                    / fundamental.balance_sheet.total_assets_quarter
-                )
+                try:
+                    debt_to_total_assets_ratio = (
+                        fundamental.balance_sheet.total_debt_quarter
+                        / fundamental.balance_sheet.total_assets_quarter
+                    )
+                except AttributeError as _e:
+                    debt_to_total_assets_ratio = 0
             else:
                 debt_to_total_assets_ratio = 0
 
             if fundamental.solvency.quick_ratio_quarter > 0:
-                liquidity_differential = (
-                    fundamental.solvency.current_ratio_quarter
-                    / fundamental.solvency.quick_ratio_quarter
-                )
+                try:
+                    liquidity_differential = (
+                        fundamental.solvency.current_ratio_quarter
+                        / fundamental.solvency.quick_ratio_quarter
+                    )
+                except AttributeError as _e:
+                    liquidity_differential = 0
             else:
                 liquidity_differential = 0
 
             if fundamental.income_statement.revenue_ttm > 0:
-                cce = (
-                    fundamental.cash_flow_statement.cash_from_operations_ttm
-                    / fundamental.income_statement.revenue_ttm
-                )
+                try:
+                    cce = (
+                        fundamental.cash_flow_statement.cash_from_operations_ttm
+                        / fundamental.income_statement.revenue_ttm
+                    )
+                except AttributeError as _e:
+                    cce = 0
             else:
                 cce = 0
 
             if fundamental.profitability.gross_profit_margin_quarter > 0:
-                operating_efficiency = (
-                    fundamental.profitability.operating_profit_margin_quarter
-                    / fundamental.profitability.gross_profit_margin_quarter
-                )
+                try:
+                    operating_efficiency = (
+                        fundamental.profitability.operating_profit_margin_quarter
+                        / fundamental.profitability.gross_profit_margin_quarter
+                    )
+                except AttributeError as _e:
+                    operating_efficiency = 0
             else:
                 operating_efficiency = 0
 
             if fundamental.income_statement.net_income_ttm > 0:
-                dividend_payout_efficiency = (
-                    fundamental.dividend.dividend + fundamental.dividend.dividend_ttm
-                ) / (2 * fundamental.income_statement.net_income_ttm)
+                try:
+                    dividend_payout_efficiency = (
+                        fundamental.dividend.dividend
+                        + fundamental.dividend.dividend_ttm
+                    ) / (2 * fundamental.income_statement.net_income_ttm)
+                except AttributeError as _e:
+                    dividend_payout_efficiency = 0
             else:
                 dividend_payout_efficiency = 0
 
             if fundamental.income_statement.revenue_ttm > 0:
-                yearly_price_change = (
-                    fundamental.price_performance.one_year_price_returns
-                    / fundamental.income_statement.revenue_ttm
-                )
+                try:
+                    yearly_price_change = (
+                        fundamental.price_performance.one_year_price_returns
+                        / fundamental.income_statement.revenue_ttm
+                    )
+                except AttributeError as _e:
+                    yearly_price_change = 0
             else:
                 yearly_price_change = 0
 
@@ -123,10 +151,13 @@ class KeyAnalysisAnalyser:
             ) / 6
 
             if fundamental.balance_sheet.total_equity > 0:
-                net_debt_to_equity = (
-                    fundamental.balance_sheet.net_debt_quarter
-                    / fundamental.balance_sheet.total_equity
-                )
+                try:
+                    net_debt_to_equity = (
+                        fundamental.balance_sheet.net_debt_quarter
+                        / fundamental.balance_sheet.total_equity
+                    )
+                except AttributeError as _e:
+                    net_debt_to_equity = 0
             else:
                 net_debt_to_equity = 0
 
