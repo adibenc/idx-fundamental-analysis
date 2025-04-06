@@ -23,6 +23,7 @@ class StockbitApiClient:
         self.headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
         }
 
         self.is_authorise = False
