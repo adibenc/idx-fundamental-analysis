@@ -28,10 +28,12 @@ class StockbitApiClient:
 
         self.is_authorise = False
 
-        self.token_temp_file_path = os.path.join(tempfile.gettempdir(), "tokennn.tmp")
+        self.token_temp_file_path = os.path.join(
+            tempfile.gettempdir(), "stockbit_token.tmp"
+        )
 
         self.refresh_token_temp_file_path = os.path.join(
-            tempfile.gettempdir(), "refresh_tokennn.tmp"
+            tempfile.gettempdir(), "stockbit_refresh_token.tmp"
         )
 
         self._initialize_token_file()
