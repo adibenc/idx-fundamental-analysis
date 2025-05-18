@@ -46,6 +46,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from schemas.stock import Stock
 from utils.logger_config import logger
 
+import time
 
 class IDX:
     """
@@ -61,6 +62,12 @@ class IDX:
         self.driver = webdriver.Chrome()
         self.is_full_retrieve = is_full_retrieve
         self.is_second_page = is_second_page
+        self.symbols = []
+        self.tickers = []
+
+    def set_symbol(self, s):
+        self.symbols = s
+        return self
 
     def stocks(self) -> [Stock]:
         """
@@ -73,43 +80,48 @@ class IDX:
 
         self.driver.get(url)
 
-        # if true it will retrieve all stocks, otherwise 10 stocks only
-        if self.is_full_retrieve:
-            # Wait for the table to be present
-            WebDriverWait(self.driver, 3).until(
-                expect.presence_of_element_located((By.NAME, "perPageSelect"))
-            )
+        try:
+            # if true it will retrieve all stocks, otherwise 10 stocks only
+            if self.is_full_retrieve:
+                # Wait for the table to be present
+                WebDriverWait(self.driver, 3).until(
+                    expect.presence_of_element_located((By.NAME, "perPageSelect"))
+                )
 
-            # # Find the dropdown
-            rows_per_page_dropdown = Select(
-                self.driver.find_element(By.NAME, "perPageSelect")
-            )
+                # # Find the dropdown
+                rows_per_page_dropdown = Select(
+                    self.driver.find_element(By.NAME, "perPageSelect")
+                )
 
-            # Select the option to retrieve all stocks
-            rows_per_page_dropdown.select_by_value("-1")
+                # Select the option to retrieve all stocks
+                rows_per_page_dropdown.select_by_value("-1")
 
-        if self.is_second_page:
-            # go to second page
-            WebDriverWait(self.driver, 3).until(
-                expect.presence_of_element_located((By.NAME, "perPageSelect"))
-            )
+            if self.is_second_page:
+                # go to second page
+                WebDriverWait(self.driver, 3).until(
+                    expect.presence_of_element_located((By.NAME, "perPageSelect"))
+                )
 
-            third_button = self.driver.find_element(
-                By.CSS_SELECTOR, "button.footer__navigation__page-btn:nth-child(4)"
-            )
+                third_button = self.driver.find_element(
+                    By.CSS_SELECTOR, "button.footer__navigation__page-btn:nth-child(4)"
+                )
 
-            third_button.click()
+                third_button.click()
 
-            # go to second page
-            WebDriverWait(self.driver, 3).until(
-                expect.presence_of_element_located((By.NAME, "perPageSelect"))
-            )
+                # go to second page
+                WebDriverWait(self.driver, 3).until(
+                    expect.presence_of_element_located((By.NAME, "perPageSelect"))
+                )
 
-            third_button = self.driver.find_element(
-                By.CSS_SELECTOR, "button.footer__navigation__page-btn:nth-child(4)"
-            )
+                third_button = self.driver.find_element(
+                    By.CSS_SELECTOR, "button.footer__navigation__page-btn:nth-child(4)"
+                )
 
-            third_button.click()
+                third_button.click()
+        except Exception as e:
+            logger.info(e)
+        
+        time.sleep(5)
 
         # Wait for the table to update, adjust the time if necessary
         WebDriverWait(self.driver, 3).until(
@@ -128,17 +140,31 @@ class IDX:
         market_caps = table.find_elements(By.XPATH, "./tbody/tr/td[4]/span")
         notes = table.find_elements(By.XPATH, "./tbody/tr/td[5]/span")
 
+        time.sleep(5)
+
         # Append data, use array of stock schema
         stocks = []
+        exc = open("dmy-exc", "r").read()
+        self.tickers = tickers 
+
+        # for index,tc in enumerate(self.symbols):
         for index in range(len(tickers)):
+            tc = tickers[index].text
+            # print([tc, self.symbols])
+            # if tc in exc:
+            #     continue
+            if len(self.symbols) > 0 and tc not in self.symbols:
+                continue
+            
             stock = Stock(
-                ticker=tickers[index].text,
+                ticker=tc,
                 name=names[index].text,
                 ipo_date=ipo_dates[index].text,
                 market_cap=float(re.sub(r"\D", "", market_caps[index].text)),
                 note=notes[index].text,
             )
             stocks.append(stock)
+            # break
 
         # Close browser
         self.driver.quit()

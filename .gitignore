@@ -9,3 +9,10 @@ logs
 *.http
 *.xlsx
 *.cache
+__pycache__
+*.pyc
+venv
+*.zip
+*.db
+
+[Dd]my*

@@ -4,54 +4,110 @@ import time
 
 import requests
 
+import hashlib
+import json
+from loguru import logger
+
 from utils.logger_config import logger
 
 
 class StockbitApiClient:
     """
-    Handles HTTP requests to the Stockbit API, including authentication and retries.
+    Handles HTTP requests to the Stockbit API, including authentication, retries, and file-based caching.
     """
 
     def __init__(self):
         """
-        Initializes the StockbitHttpRequest with a URL and optional headers.
+        Initializes the StockbitHttpRequest with a URL and default headers.
         Authenticates with the Stockbit API upon initialization.
-
-        Parameters:
-        - headers (dict): Optional headers for the HTTP request.
+        Sets up file-based caching.
         """
         self.headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
         }
-
         self.is_authorise = False
-
         self.token_temp_file_path = os.path.join(
             tempfile.gettempdir(), "stockbit_token.tmp"
         )
-
         self.refresh_token_temp_file_path = os.path.join(
             tempfile.gettempdir(), "stockbit_refresh_token.tmp"
         )
-
         self._initialize_token_file()
+        self.cache_dir = os.path.join("stockbit_cache")
+        os.makedirs(self.cache_dir, exist_ok=True)  # Ensure cache directory exists
 
-    def _request(self, url: str, method: str, payload: dict = None):
+    def _get_cache_filename(self, url: str) -> str:
         """
-        Makes an HTTP request with the specified method and payload, retrying on failure.
+        Generates a unique filename for caching based on the URL.  Uses a hash
+        to avoid issues with long URLs or special characters.
 
-        Parameters:
-        - method (str): The HTTP method ("GET" or "POST").
-        - payload (dict): Optional payload for POST requests.
+        Args:
+            url: The URL to be cached.
 
         Returns:
-        - dict: The JSON response from the server, or an empty dictionary on failure.
+            The full path to the cache file.
+        """
+        hashed_url = hashlib.md5(url.encode()).hexdigest()
+        return os.path.join(self.cache_dir, f"{hashed_url}.json")
+
+    def _load_cache(self, url: str) -> dict:
+        """
+        Loads cached data from a file, if it exists.
+
+        Args:
+            url: The URL corresponding to the data to load.
+
+        Returns:
+            The cached data as a dictionary, or None if not found or an error occurs.
+        """
+        cache_file = self._get_cache_filename(url)
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, "r") as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, OSError) as e:
+                logger.error(f"Error loading cache from {cache_file}: {e}")
+                return None
+        return None
+
+    def _save_cache(self, url: str, data: dict) -> None:
+        """
+        Saves data to a cache file.
+
+        Args:
+            url: The URL corresponding to the data being saved.
+            data: The data to save (must be JSON serializable).
+        """
+        cache_file = self._get_cache_filename(url)
+        try:
+            with open(cache_file, "w") as f:
+                json.dump(data, f)
+        except (TypeError, OSError) as e:
+            logger.error(f"Error saving cache to {cache_file}: {e}")
+
+    def _request(self, url: str, method: str, payload: dict = None) -> dict:
+        """
+        Makes an HTTP request with the specified method and payload, retrying on failure,
+        and uses file-based caching.
+
+        Args:
+            url: The URL to request.
+            method: The HTTP method ("GET" or "POST").
+            payload: Optional payload for POST requests.
+
+        Returns:
+            The JSON response from the server, or an empty dictionary on failure.
         """
         retry = 0
         while retry <= 3:
             try:
+                cached_data = self._load_cache(url)
+                if cached_data:
+                    logger.debug(f"Loaded data from cache for {url}")
+                    return cached_data
+
                 if method == "GET":
                     response = requests.get(url, headers=self.headers)
                 elif method == "POST":
@@ -61,10 +117,14 @@ class StockbitApiClient:
 
                 logger.debug(url)
                 logger.debug(response.status_code)
-                logger.debug(response.json())
+                # avoid logging the entire response.json(), which can be very large
+                if response.content:
+                    logger.debug(f"Response snippet: {str(response.content[:64])}")
 
                 if response.status_code == 200:
-                    return response.json()
+                    data = response.json()
+                    self._save_cache(url, data)  # Cache the successful response
+                    return data
                 else:
                     logger.error(
                         f"Error: Received status code {response.status_code}, "
@@ -75,16 +135,16 @@ class StockbitApiClient:
                         self._authenticate_stockbit()
                         retry += 1
                     else:
-                        break
+                        break  # Don't retry for other errors
 
             except requests.exceptions.RequestException as e:
                 logger.error(f"Request failed: {e} retry: {retry}")
-                break
+                break  # Don't retry on connection errors
 
-            time.sleep(0.2)
+            time.sleep(0.2)  # Consider increasing this backoff
 
-        logger.error(f"Failed to retrieve key statistics retry: {retry}")
-        return {}
+        logger.error(f"Failed to retrieve data after retries for {url}")
+        return {}  # Return an empty dict, consistent with original behavior
 
     def get(self, url: str):
         """
