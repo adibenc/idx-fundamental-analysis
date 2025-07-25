@@ -42,6 +42,7 @@ class DatabaseBuilder(BuilderInterface):
                 )
 
                 session.add(stock_model)
+                session.commit()
     
     def insert_dividend(self):
         for stock in self.stocks:
@@ -187,6 +188,7 @@ class DatabaseBuilder(BuilderInterface):
                 )
 
                 session.add(stock_price)
+                session.commit()
     
     def insert_corp_action(self):
         try:

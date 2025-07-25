@@ -46,16 +46,16 @@ with open("dmy-ex1", "r") as f:
 # syms = sorted(syms)[1:5]
 # syms = sorted(syms)
 idx.set_symbol(syms)
-# stocks = idx.stocks()
-stocks = idx.stocks_from_df(csv_path = "/media/data1/project1/idx-fundamental-analysis/idx.csv")
+stocks = idx.stocks()
+# stocks = idx.stocks_from_df(csv_path = "/media/data1/project1/idx-fundamental-analysis/idx.csv")
 logger.info("Stocks: {}".format(stocks))
 logger.info("Total Stocks: {}".format(len(stocks)))
 
 # Process stocks key statistics, price, fundamental, and stream data (news) from Stockbit
 sb = (StockBit(stocks=stocks)
-    #    .with_stock_price()
+       .with_stock_price()
     #   .with_dividend()
-       .with_fundamental()
+    #    .with_fundamental()
       .with_stream_data()
     )
 
@@ -79,10 +79,10 @@ try:
     # database_builder.insert_corp_action()
     database_builder.insert_stock()
     # database_builder.insert_dividend()
-    database_builder.insert_key_statistic()
-    database_builder.insert_key_analysis()
-    database_builder.insert_stock_price()
-    database_builder.insert_sentiment()
+    # database_builder.insert_key_statistic()
+    # database_builder.insert_key_analysis()
+    # database_builder.insert_stock_price()
+    # database_builder.insert_sentiment()
 except Exception as e:
     print("e1", e)
 

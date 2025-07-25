@@ -54,6 +54,8 @@ class IDX:
     """
     IDX Provider Class
     """
+    # useDf = True
+    useDf = False
 
     def __init__(self, is_full_retrieve=True, is_second_page=True):
         """
@@ -169,49 +171,63 @@ class IDX:
         # Append data, use array of stock schema
         stocks = []
 
-        # Iterate through the DataFrame rows
-        for _, row in df.iterrows():
-            tc = row['TICKER']
+        if self.useDf:
+            # Iterate through the DataFrame rows
+            for _, row in df.iterrows():
+                tc = row['TICKER']
 
-            # Skip if tc is not in self.symbols (if defined) or is in excluded tickers
-            if hasattr(self, 'symbols') and self.symbols and tc not in self.symbols:
-                continue
-            if tc in self.tickers:
-                continue
+                # Skip if tc is not in self.symbols (if defined) or is in excluded tickers
+                if hasattr(self, 'symbols') and self.symbols and tc not in self.symbols:
+                    continue
+                if tc in self.tickers:
+                    continue
 
-            # Create Stock object and append to stocks list
-            stock = Stock(
-                ticker=tc,
-                name=row['NAME'],
-                ipo_date=row['IPO_DATE'],
-                market_cap=float(re.sub(r"\D", "", str(row['MARKET_CAP']))),
-                note=row['NOTE'],
-            )
-            stocks.append(stock)
-        """
-        # for index,tc in enumerate(self.symbols):
-        for index in range(len(tickers)):
-            # tc = tickers[index].text
-            tc = tickers[index]
-            # print([tc, self.symbols])
-            # if tc in exc:
-            #     continue
-            if len(self.symbols) > 0 and tc not in self.symbols:
-                continue
+                # Create Stock object and append to stocks list
+                stock = Stock(
+                    ticker=tc,
+                    name=row['NAME'],
+                    ipo_date=row['IPO_DATE'],
+                    market_cap=float(re.sub(r"\D", "", str(row['MARKET_CAP']))),
+                    note=row['NOTE'],
+                )
+                stocks.append(stock)
+        else:
+            csv_path = "/media/data1/project1/idx-fundamental-analysis/idx.csv"
+            df = pd.DataFrame()
+            # """
+            # for index,tc in enumerate(self.symbols):
+            # print(tickers)
             
-            stock = Stock(
-                ticker=tc,
-                name=names[index].text,
-                ipo_date=ipo_dates[index].text,
-                market_cap=float(re.sub(r"\D", "", market_caps[index].text)),
-                note=notes[index].text,
-            )
-            stocks.append(stock)
-            # break
+            for index in range(len(tickers)):
+                # tc = tickers[index].text
+                tc = tickers[index]
+                print([tc, self.symbols])
+                exit()
+                # if tc in exc:
+                #     continue
+                if len(self.symbols) > 0 and tc not in self.symbols:
+                    continue
+                
+                stock = Stock(
+                    ticker=tc,
+                    name=names[index].text,
+                    ipo_date=ipo_dates[index].text,
+                    market_cap=float(re.sub(r"\D", "", market_caps[index].text)),
+                    note=notes[index].text,
+                )
+                stocks.append(stock)
+                
+                try:
+                    pd.concat([df, pd.DataFrame(stock.to_dict())])
+                except Exception as e:
+                    print(e)
+                # break
+                
+            df.to_csv(csv_path)
 
         # Close browser
         self.driver.quit()
-        """
+        # """
 
         logger.info(f"Stocks has been retrieved from {url}")
         return stocks
