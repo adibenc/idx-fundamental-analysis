@@ -189,18 +189,21 @@ class DatabaseBuilder(BuilderInterface):
                 session.add(stock_price)
     
     def insert_corp_action(self):
-        for stock in self.stocks:
-            for action in stock.corp_actions:
-                with get_session() as session:
-                    corp_action = CorpAction(
-                        stock_ticker=stock.ticker,
-                        company_id=action["action_info"]["rups"]["company_id"],
-                        company_symbol=action["action_info"]["rups"]["company_symbol"],
-                        rups_date=action["action_info"]["rups"]["rups_date"],
-                        rups_venue=action["action_info"]["rups"]["rups_venue"],
-                        rups_time=action["action_info"]["rups"]["rups_time"],
-                    )
-                    session.add(corp_action)
+        try:
+            for stock in self.stocks:
+                for action in stock.corp_actions:
+                    with get_session() as session:
+                        corp_action = CorpAction(
+                            stock_ticker=stock.ticker,
+                            company_id=action["action_info"]["rups"]["company_id"],
+                            company_symbol=action["action_info"]["rups"]["company_symbol"],
+                            rups_date=action["action_info"]["rups"]["rups_date"],
+                            rups_venue=action["action_info"]["rups"]["rups_venue"],
+                            rups_time=action["action_info"]["rups"]["rups_time"],
+                        )
+                        session.add(corp_action)
+        except Exception:
+            print("insert corp act")
 
     def insert_corp_action_df(self, corp_actions: list):
         """

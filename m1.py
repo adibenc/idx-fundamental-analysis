@@ -59,10 +59,10 @@ sb = (StockBit(stocks=stocks)
       .with_stream_data()
     )
 
-corp_actions = []
-for stock in stocks:
-    # corp_actions.extend(sb.fetch_corp_action(emmitent=stock["symbol"]))
-    corp_actions.extend(sb.fetch_corp_action(emmitent=stock.ticker))
+# corp_actions = []
+# for stock in stocks:
+#     # corp_actions.extend(sb.fetch_corp_action(emmitent=stock["symbol"]))
+#     corp_actions.extend(sb.fetch_corp_action(emmitent=stock.ticker))
 
 # Analyser to build the output
 try:
@@ -76,7 +76,7 @@ except Exception as e:
 try:
     # Populate to database
     database_builder = DatabaseBuilder(stocks=stocks)
-    database_builder.insert_corp_action()
+    # database_builder.insert_corp_action()
     database_builder.insert_stock()
     # database_builder.insert_dividend()
     database_builder.insert_key_statistic()
