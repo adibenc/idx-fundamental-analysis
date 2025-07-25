@@ -36,22 +36,33 @@ logger.info("IDX Composite Fundamental Analysis")
 args = parse_arguments()
 
 # Setup database
-database.setup_db(is_drop_table=True)
+# database.setup_db(is_drop_table=True)
 
 # Retrieve stocks from IDX
 idx = IDX(is_full_retrieve=args.full_retrieve)
 syms = ['ANTM']
+with open("dmy-ex1", "r") as f:
+    syms = f.read().split("\n")
 # syms = sorted(syms)[1:5]
-syms = sorted(syms)
+# syms = sorted(syms)
 idx.set_symbol(syms)
-stocks = idx.stocks()
+# stocks = idx.stocks()
+stocks = idx.stocks_from_df(csv_path = "/media/data1/project1/idx-fundamental-analysis/idx.csv")
 logger.info("Stocks: {}".format(stocks))
 logger.info("Total Stocks: {}".format(len(stocks)))
 
 # Process stocks key statistics, price, fundamental, and stream data (news) from Stockbit
-sb = (StockBit(stocks=stocks).with_stock_price().with_fundamental()
- .with_stream_data()
+sb = (StockBit(stocks=stocks)
+    #    .with_stock_price()
+    #   .with_dividend()
+       .with_fundamental()
+      .with_stream_data()
     )
+
+corp_actions = []
+for stock in stocks:
+    # corp_actions.extend(sb.fetch_corp_action(emmitent=stock["symbol"]))
+    corp_actions.extend(sb.fetch_corp_action(emmitent=stock.ticker))
 
 # Analyser to build the output
 try:
@@ -65,7 +76,9 @@ except Exception as e:
 try:
     # Populate to database
     database_builder = DatabaseBuilder(stocks=stocks)
+    database_builder.insert_corp_action()
     database_builder.insert_stock()
+    # database_builder.insert_dividend()
     database_builder.insert_key_statistic()
     database_builder.insert_key_analysis()
     database_builder.insert_stock_price()

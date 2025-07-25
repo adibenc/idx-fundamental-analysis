@@ -17,10 +17,11 @@ from db import (
     PricePerformance,
     Stat,
     Fundamental,
+    # CorpAction,
 )
 from db.models.stock import Stock
 
-from db.session import get_session
+from db.session import get_session, get_session_a
 from schemas.stock import Stock as StockSchema
 
 
@@ -30,7 +31,7 @@ class DatabaseBuilder(BuilderInterface):
 
     def insert_stock(self):
         for stock in self.stocks:
-            with get_session() as session:
+            with get_session_a() as session:
                 stock_model = Stock(
                     ticker=stock.ticker,
                     name=stock.name,
@@ -41,6 +42,22 @@ class DatabaseBuilder(BuilderInterface):
                 )
 
                 session.add(stock_model)
+    
+    def insert_dividend(self):
+        for stock in self.stocks:
+            with get_session_a() as session:
+                dividend = Dividend(**stock.fundamental.dividend.to_dict())
+
+                session.add(dividend)
+
+                # Create the Fundamental instance
+                fundamental = Fundamental(
+                    dividend_id=dividend.id,
+                    stock_ticker=stock.ticker,
+                )
+
+                # Add the Fundamental instance to the session
+                session.add(fundamental)
 
     def insert_key_statistic(self):
 
@@ -170,3 +187,37 @@ class DatabaseBuilder(BuilderInterface):
                 )
 
                 session.add(stock_price)
+    
+    def insert_corp_action(self):
+        for stock in self.stocks:
+            for action in stock.corp_actions:
+                with get_session() as session:
+                    corp_action = CorpAction(
+                        stock_ticker=stock.ticker,
+                        company_id=action["action_info"]["rups"]["company_id"],
+                        company_symbol=action["action_info"]["rups"]["company_symbol"],
+                        rups_date=action["action_info"]["rups"]["rups_date"],
+                        rups_venue=action["action_info"]["rups"]["rups_venue"],
+                        rups_time=action["action_info"]["rups"]["rups_time"],
+                    )
+                    session.add(corp_action)
+
+    def insert_corp_action_df(self, corp_actions: list):
+        """
+        Insert corporate action data into the database.
+        """
+        try:
+            with database.engine.begin() as conn:
+                for action in corp_actions:
+                    corp_action = CorpAction(
+                        # company_id=action["action_info"]["rups"]["company_id"],
+                        # company_symbol=action["action_info"]["rups"]["company_symbol"],
+                        rups_date=action["action_info"]["rups"]["rups_date"],
+                        rups_venue=action["action_info"]["rups"]["rups_venue"],
+                        rups_time=action["action_info"]["rups"]["rups_time"],
+                    )
+                    conn.add(corp_action)
+                conn.commit()
+            logger.info("Corporate action data inserted successfully.")
+        except Exception as e:
+            logger.error(f"Failed to insert corporate action data: {e}")

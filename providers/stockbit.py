@@ -71,6 +71,58 @@ class StockBit:
 
         return self.stockbit_api_client.get(url)
 
+    def with_dividend(self):
+        """
+        Get fundamentals for a list of stocks.
+
+        Returns:
+            Self
+        """
+        for stock in self.stocks:
+            self.key_statistic = self.key_statistic_by_stock(stock)
+
+            if self.key_statistic:
+                fundamental = Fundamental()
+                fundamental.stock = stock
+
+                data = self.key_statistic["data"]
+
+                # Stats
+                #
+                stat = Stat(
+                    parse_currency_to_float(data["stats"]["current_share_outstanding"]),
+                    parse_currency_to_float(data["stats"]["market_cap"]),
+                    parse_currency_to_float(data["stats"]["enterprise_value"]),
+                )
+                fundamental.stat = stat
+                logger.debug(stat)
+
+                # -- nested object
+                closure_fin_items_results = data["closure_fin_items_results"]
+
+                # Current Valuation
+                #
+                current_valuation_fin_name_results = closure_fin_items_results[0][
+                    "fin_name_results"
+                ]
+                
+                # Dividend
+                dividend_fin_name_results = closure_fin_items_results[6]["fin_name_results"]
+                dividend = Dividend(
+                    parse_key_statistic_results_item_value(dividend_fin_name_results, 0),
+                    parse_key_statistic_results_item_value(dividend_fin_name_results, 1),
+                    parse_key_statistic_results_item_value(dividend_fin_name_results, 2),
+                    parse_key_statistic_results_item_value(dividend_fin_name_results, 3),
+                    parse_key_statistic_results_item_value(dividend_fin_name_results, 4),
+                )
+                fundamental.dividend = dividend
+                logger.debug(dividend)
+
+            time.sleep(0.1)
+            logger.debug(stock)
+
+        return self
+    
     def with_fundamental(self):
         """
         Get fundamentals for a list of stocks.
@@ -559,3 +611,25 @@ class StockBit:
             logger.debug(stock)
 
         return self
+
+    def fetch_corp_action(self, emmitent: str, limit: int = 30):
+        """
+        Fetch corporate action data for a given emmitent.
+        """
+        url = f"https://exodus.stockbit.com/corpaction/{emmitent}?limit={limit}"
+        headers = {
+            "accept": "application/json",
+            "authorization": "Bearer -aaaa",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        }
+
+        try:
+            # response = requests.get(url, headers=headers)
+            # response.raise_for_status()
+            # data = response.json()
+            data = self.stockbit_api_client.get(url)
+            logger.info(f"Fetched corporate action data for {emmitent}: {data}")
+            return data.get("data", [])
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch corporate action data: {e}")
+            return []

@@ -37,6 +37,8 @@ It uses Selenium WebDriver to interact with the website and extracts relevant da
 
 import re
 
+import pandas as pd
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
@@ -144,12 +146,53 @@ class IDX:
 
         # Append data, use array of stock schema
         stocks = []
-        exc = open("dmy-exc", "r").read()
-        self.tickers = tickers 
+        exc = open("/media/data1/project1/idx-fundamental-analysis/dmy-ex1", "r").read()
+        # self.tickers = tickers
+        self.tickers = exc.split("\n")
 
+        
+        # Read excluded tickers from file
+        exc_path = "/media/data1/project1/idx-fundamental-analysis/dmy-ex1"
+        with open(exc_path, "r") as exc_file:
+            exc = exc_file.read()
+        self.tickers = exc.splitlines()
+
+        # Read existing data from CSV
+        csv_path = "/media/data1/project1/idx-fundamental-analysis/idx.csv"
+        df = pd.read_csv(csv_path)
+        """
+        'TICKER','NAME','IPO_DATE','NOTE','MARKET_CAP','HOME_PAGE','ID','CREATED_AT'
+        AALI,Astra Agro Lestari Tbk.,'09 Des 1997',UTAMA,1924688333,'',1,'2025-06-10 13:01:13'
+        ABBA,Mahaka Media Tbk.,'03 Apr 2002',PEMANTAUAN KHUSUS,3935892857,'',2,'2025-06-10 13:01:13'
+        """
+
+        # Append data, use array of stock schema
+        stocks = []
+
+        # Iterate through the DataFrame rows
+        for _, row in df.iterrows():
+            tc = row['TICKER']
+
+            # Skip if tc is not in self.symbols (if defined) or is in excluded tickers
+            if hasattr(self, 'symbols') and self.symbols and tc not in self.symbols:
+                continue
+            if tc in self.tickers:
+                continue
+
+            # Create Stock object and append to stocks list
+            stock = Stock(
+                ticker=tc,
+                name=row['NAME'],
+                ipo_date=row['IPO_DATE'],
+                market_cap=float(re.sub(r"\D", "", str(row['MARKET_CAP']))),
+                note=row['NOTE'],
+            )
+            stocks.append(stock)
+        """
         # for index,tc in enumerate(self.symbols):
         for index in range(len(tickers)):
-            tc = tickers[index].text
+            # tc = tickers[index].text
+            tc = tickers[index]
             # print([tc, self.symbols])
             # if tc in exc:
             #     continue
@@ -168,6 +211,58 @@ class IDX:
 
         # Close browser
         self.driver.quit()
+        """
 
         logger.info(f"Stocks has been retrieved from {url}")
+        return stocks
+    
+    # import re
+    # import pandas as pd
+
+    def stocks_from_df(self, csv_path, exc_path=None):
+        """
+        stocks_from_df()
+        Reads stock data from a CSV file and processes it into a list of Stock objects.
+
+        Args:
+            csv_path (str): Path to the CSV file containing stock data.
+            exc_path (str): Path to the file containing excluded tickers.
+
+        Returns:
+            list: A list of Stock objects.
+        """
+        # Read excluded tickers from file
+        # with open(exc_path, "r") as exc_file:
+        #     exc = exc_file.read()
+        # self.tickers = exc.splitlines()
+
+        # Read existing data from CSV
+        df = pd.read_csv(csv_path)
+
+        # Initialize the list of stocks
+        stocks = []
+
+        # Iterate through the DataFrame rows
+        for _, row in df.iterrows():
+            print(row)
+            tc = row['TICKER']
+
+            # Skip if tc is not in self.symbols (if defined) or is in excluded tickers
+            # if hasattr(self, 'symbols') and self.symbols and tc not in self.symbols:
+            #     continue
+            # if tc in self.tickers:
+            #     continue
+
+            # Create Stock object and append to stocks list
+            stock = Stock(
+                ticker=tc,
+                name=row['NAME'],
+                ipo_date=row['IPO_DATE'],
+                market_cap=float(re.sub(r"\D", "", str(row['MARKET_CAP']))),
+                note=row['NOTE'],
+            )
+            stocks.append(stock)
+        
+        logger.info(f"Stocks has been retrieved from df")
+
         return stocks

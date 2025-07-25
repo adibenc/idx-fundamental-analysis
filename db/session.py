@@ -27,3 +27,16 @@ def get_session():
         raise
     finally:
         session.close()
+
+# exec session without re raising err
+@contextmanager
+def get_session_a():
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except SQLAlchemyError:
+        session.rollback()
+    finally:
+        session.close()
